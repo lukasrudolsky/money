@@ -7,14 +7,20 @@ import {
 // Loga žijí v /public/logos/<id>.svg — viz public/logos/README.md, kde je
 // popsané, odkud vzít oficiální soubory a čím jsou tam nahrazené teď.
 // Když soubor chybí nebo se nenačte, Logo níž zobrazí zkratku z pole short.
+// minIncome = kolik musí měsíčně přijít na účet, aby odměna platila. Nahradilo
+// to booleovské requiresIncome, které nerozlišovalo 10 000 od 15 000 Kč, takže
+// se lidem nabízela odměna, na kterou svým příjmem nedosáhli.
 const OFFERS = [
-  { id: "airbank", bank: "Air Bank", short: "AB", tint: "#F97316", logo: "/logos/airbank.svg", amount: 1500, requiresIncome: true, minCards: 5, note: "Příchozí platba od 15 000 Kč, 5 plateb kartou" },
-  { id: "raiffeisen", bank: "Raiffeisenbank", short: "RB", tint: "#FACC15", logo: "/logos/raiffeisenbank.svg", amount: 2000, requiresIncome: true, minCards: 10, note: "Výplata na účet, 10 plateb kartou" },
-  { id: "moneta", bank: "Moneta", short: "MO", tint: "#38BDF8", logo: "/logos/moneta.svg", amount: 1200, requiresIncome: true, minCards: 0, note: "Příchozí platba od 10 000 Kč" },
-  { id: "mbank", bank: "mBank", short: "mB", tint: "#FB7185", logo: "/logos/mbank.svg", amount: 1000, requiresIncome: false, minCards: 5, note: "5 plateb kartou po dobu 2 měsíců" },
-  { id: "csob", bank: "ČSOB", short: "ČS", tint: "#818CF8", logo: "/logos/csob.svg", amount: 800, requiresIncome: false, minCards: 10, note: "10 plateb kartou v prvním měsíci" },
-  { id: "fio", bank: "Fio banka", short: "Fi", tint: "#4ADE80", logo: "/logos/fio.svg", amount: 500, requiresIncome: false, minCards: 0, note: "Bez podmínek, stačí aktivovat účet" },
+  { id: "airbank", bank: "Air Bank", short: "AB", tint: "#F97316", logo: "/logos/airbank.svg", amount: 1500, minIncome: 15000, minCards: 5, note: "Příchozí platba od 15 000 Kč, 5 plateb kartou" },
+  { id: "raiffeisen", bank: "Raiffeisenbank", short: "RB", tint: "#FACC15", logo: "/logos/raiffeisenbank.svg", amount: 2000, minIncome: 15000, minCards: 10, note: "Výplata na účet, 10 plateb kartou" },
+  { id: "moneta", bank: "Moneta", short: "MO", tint: "#38BDF8", logo: "/logos/moneta.svg", amount: 1200, minIncome: 10000, minCards: 0, note: "Příchozí platba od 10 000 Kč" },
+  { id: "mbank", bank: "mBank", short: "mB", tint: "#FB7185", logo: "/logos/mbank.svg", amount: 1000, minIncome: 0, minCards: 5, note: "5 plateb kartou po dobu 2 měsíců" },
+  { id: "csob", bank: "ČSOB", short: "ČS", tint: "#818CF8", logo: "/logos/csob.svg", amount: 800, minIncome: 0, minCards: 10, note: "10 plateb kartou v prvním měsíci" },
+  { id: "fio", bank: "Fio banka", short: "Fi", tint: "#4ADE80", logo: "/logos/fio.svg", amount: 500, minIncome: 0, minCards: 0, note: "Bez podmínek, stačí aktivovat účet" },
 ];
+
+// Kolik na účet reálně dostaneš podle odpovědi na otázku o výplatě.
+const INCOME = { yes: Infinity, partial: 10000, no: 0 };
 
 const BG = "#04352A";
 const CARD = "rgba(255,255,255,0.06)";
@@ -24,39 +30,44 @@ const INK = "#022C22";
 const LETTERS = "ABCDEFGH".split("");
 
 const QUESTIONS = [
-  { key: "age", type: "single", icon: CalendarDays, q: "Kolik ti je?", sub: "Podmínky odměn se liší podle věku.",
+  { key: "age", type: "single", icon: CalendarDays, q: "Kolik ti je?", sub: "Odměnu za účet vyplácí banky až od osmnácti.",
     options: [
       { value: "under18", label: "Pod 18" },
       { value: "18-25", label: "18–25" },
       { value: "26+", label: "26 a víc" },
     ] },
-  { key: "owned", type: "banks", icon: Landmark, q: "Kde už máš účet?", sub: "Odměnu vyplácí banky jen novým klientům.",
+  { key: "owned", type: "banks", icon: Landmark, q: "Kde už máš účet?", sub: "Odměnu dostaneš jen tam, kde ještě klient nejsi.",
     options: OFFERS.map((o) => ({ value: o.id, label: o.bank, short: o.short, tint: o.tint, logo: o.logo })) },
   { key: "count", type: "single", icon: Wallet, q: "Kolik účtů si chceš založit?", sub: "Odměny jde posbírat i u víc bank najednou.",
     options: [
-      { value: 1, label: "Jeden", hint: "Chci jeden nový účet", icon: Wallet },
-      { value: 3, label: "Dva až tři", hint: "Zvládnu jich víc", icon: Coins },
+      { value: 1, label: "Jeden", hint: "Chci jeden a mít klid", icon: Wallet },
+      { value: 3, label: "Dva až tři", hint: "Zvládnu si pohlídat víc podmínek", icon: Coins },
       { value: 99, label: "Kolik to jde", hint: "Jde mi hlavně o peníze", icon: TrendingUp },
     ] },
-  { key: "income", type: "single", icon: Banknote, q: "Můžeš si nechat posílat výplatu na nový účet?", sub: "Většina vyšších odměn stojí na příchozí platbě.",
+  // Hodnoty odpovídají klíčům v INCOME. Prostřední možnost říká konkrétní
+  // částku schválně — „pár tisíc" dřív pouštělo dál i odměny za 15 000 Kč.
+  { key: "income", type: "single", icon: Banknote, q: "Můžeš si nechat posílat výplatu na nový účet?", sub: "Na příchozí platbě stojí ty nejvyšší odměny.",
     options: [
-      { value: "yes", label: "Ano", hint: "Výplatu tam přesunu", icon: Banknote },
-      { value: "partial", label: "Radši ne", hint: "Ale pár tisíc tam pošlu", icon: Coins },
-      { value: "no", label: "Ne", hint: "Výplatu nechci přesouvat", icon: Wallet },
+      { value: "yes", label: "Ano", hint: "Výplatu tam přesměruju", icon: Banknote },
+      { value: "partial", label: "Výplatu ne", hint: "Ale 10 000 Kč měsíčně tam pošlu", icon: Coins },
+      { value: "no", label: "Ne", hint: "Nový účet nechci nikam napojovat", icon: Wallet },
     ] },
-  { key: "cards", type: "single", icon: CreditCard, q: "Kolik plateb kartou zvládneš měsíčně?", sub: "Poslední otázka.",
+  // Hranice musí sedět na minCards v OFFERS: „do pěti" s hodnotou 4 brala
+  // lidem, kteří pět plateb zvládnou, odměnu s minCards 5.
+  { key: "cards", type: "single", icon: CreditCard, q: "Kolik plateb kartou zvládneš měsíčně?", sub: "U většiny odměn musíš kartou párkrát zaplatit. Poslední otázka.",
     options: [
-      { value: 4, label: "Do pěti", icon: CreditCard },
-      { value: 9, label: "Pět až deset", icon: CreditCard },
-      { value: 99, label: "Přes deset", icon: CreditCard },
+      { value: 4, label: "Čtyři a míň", icon: CreditCard },
+      { value: 9, label: "Pět až devět", icon: CreditCard },
+      { value: 99, label: "Deset a víc", icon: CreditCard },
     ] },
 ];
 
 function matchOffers(a) {
   const owned = a.owned || [];
+  const income = INCOME[a.income ?? "yes"] ?? Infinity;
   return OFFERS
     .filter((o) => !owned.includes(o.id))
-    .filter((o) => (o.requiresIncome ? (a.income ?? "yes") !== "no" : true))
+    .filter((o) => o.minIncome <= income)
     .filter((o) => o.minCards <= (a.cards ?? 99))
     .sort((x, y) => y.amount - x.amount)
     .slice(0, (a.count ?? 99) === 99 ? 99 : a.count);
