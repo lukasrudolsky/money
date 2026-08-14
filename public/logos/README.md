@@ -3,26 +3,39 @@
 Komponenta `components/BonusQuiz.jsx` načítá logo každé banky z `/logos/<id>.svg`.
 `<id>` odpovídá poli `id` v konstantě `OFFERS`.
 
-| Soubor | Banka | Kde vzít oficiální soubor |
+| Soubor | Banka | Oficiální zdroj |
 | --- | --- | --- |
-| `airbank.svg` | Air Bank | airbank.cz → sekce pro média / press kit |
-| `raiffeisenbank.svg` | Raiffeisenbank | rb.cz → sekce pro média / brand manual |
-| `moneta.svg` | Moneta Money Bank | moneta.cz → sekce pro média |
-| `mbank.svg` | mBank | mbank.cz → sekce pro média |
-| `csob.svg` | ČSOB | csob.cz → sekce pro média |
-| `fio.svg` | Fio banka | fio.cz → sekce pro média |
+| `airbank.svg` | Air Bank | [airbank.cz/pro-novinare](https://www.airbank.cz/pro-novinare/) — logo tam není ke stažení, píše se o něj na novinari@airbank.cz |
+| `raiffeisenbank.svg` | Raiffeisenbank | [rb.cz → Pro média → Ke stažení](https://www.rb.cz/informacni-servis/pro-media/ke-stazeni) |
+| `moneta.svg` | MONETA Money Bank | [moneta.cz → Loga a fotografie](https://www.moneta.cz/servis-pro-media/loga-a-fotografie) — ZIP balíčky |
+| `mbank.svg` | mBank | [media.mbank.pl → mBank's logotypes](https://en.media.mbank.pl/presskits/mbank-s-logotypes) |
+| `csob.svg` | ČSOB | [csob.cz → Servis pro média](https://www.csob.cz/csob/servis-pro-media) |
+| `fio.svg` | Fio banka | [fio.cz → Média](https://www.fio.cz/o-nas/media) — PDF, PNG, JPG |
+
+Nejrychlejší cesta bývá stejně **affiliate program dané banky** — kreativy tam
+mívají logo rovnou ve správných rozměrech a jejich použití je pokryté smlouvou.
 
 ## Co je tu teď
 
-Soubory v tomhle adresáři jsou **dočasné monogramy** (zkratka banky v její barvě),
-ne oficiální loga. Vznikly proto, aby kvíz nevypadal rozbitě, než doplníš reálné
-soubory — síť v prostředí, kde se generovaly, neměla přístup na weby bank.
+Soubory v tomhle adresáři jsou **dočasné monogramy** — zkratka banky v přibližně
+její firemní barvě, ne oficiální loga. Vznikly proto, aby kvíz nevypadal rozbitě,
+než doplníš reálné soubory: prostředí, kde se generovaly, mělo zablokovaný
+přístup na weby bank i na všechny logo agregátory.
 
 ## Jak je nahradit
 
-1. Stáhni oficiální logo z media kitu banky nebo z kreativ v affiliate programu.
-2. Přejmenuj na `<id>.svg` podle tabulky výše a nahraď soubor v tomhle adresáři.
-3. Nic víc — komponenta se na cestu odkazuje napevno, žádná změna kódu není potřeba.
+Ručně: stáhni logo ze zdroje v tabulce, přejmenuj na `<id>.svg` a nahraď soubor
+v tomhle adresáři. Nic víc — komponenta se na cestu odkazuje napevno.
+
+Nebo skriptem, když nechceš přejmenovávat ručně:
+
+1. Otevři stránku z tabulky, najdi logo a zkopíruj adresu souboru.
+2. Vlož ji do `scripts/logo-sources.json` do pole `file` u příslušné banky.
+3. Spusť `node scripts/fetch-logos.mjs`.
+
+Skript soubor stáhne, pojmenuje podle `id`, ohlídá typ i velikost a u jiné
+přípony než `.svg` připomene, že je potřeba upravit cestu v `OFFERS`. ZIP a PDF
+(MONETA, Fio) neumí rozbalit — ty vyřeš ručně.
 
 Pár praktických věcí, které se vyplatí ohlídat:
 

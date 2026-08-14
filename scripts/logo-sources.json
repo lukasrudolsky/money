@@ -1,0 +1,53 @@
+{
+  "_comment": [
+    "page  = oficiální stránka banky pro média, ověřená (tam se logo hledá).",
+    "file  = přímý odkaz na soubor s logem. Doplň ho ručně — otevři 'page',",
+    "        najdi logo, zkopíruj adresu souboru (pravý klik → Kopírovat adresu",
+    "        odkazu / obrázku) a vlož sem. Pak spusť: node scripts/fetch-logos.mjs",
+    "Prázdný 'file' skript přeskočí a jen vypíše, kam se podívat."
+  ],
+  "banks": [
+    {
+      "id": "airbank",
+      "name": "Air Bank",
+      "page": "https://www.airbank.cz/pro-novinare/",
+      "file": "",
+      "note": "Logo není na stránce přímo ke stažení, píší si o něj na novinari@airbank.cz. Rychlejší cesta bývají kreativy v affiliate programu."
+    },
+    {
+      "id": "raiffeisenbank",
+      "name": "Raiffeisenbank",
+      "page": "https://www.rb.cz/informacni-servis/pro-media/ke-stazeni",
+      "file": "",
+      "note": "Sekce 'Ke stažení' má i fotobanku: /informacni-servis/pro-media/ke-stazeni/fotobanka"
+    },
+    {
+      "id": "moneta",
+      "name": "MONETA Money Bank",
+      "page": "https://www.moneta.cz/servis-pro-media/loga-a-fotografie",
+      "file": "",
+      "note": "Loga jsou v ZIP balíčcích (32 kB až 6 MB). ZIP si rozbal a vyber čtvercovou variantu."
+    },
+    {
+      "id": "mbank",
+      "name": "mBank",
+      "page": "https://en.media.mbank.pl/presskits/mbank-s-logotypes",
+      "file": "",
+      "note": "Oficiální press kit skupiny mBank, sekce přímo pro logotypy."
+    },
+    {
+      "id": "csob",
+      "name": "ČSOB",
+      "page": "https://www.csob.cz/csob/servis-pro-media",
+      "file": "",
+      "note": "Loga používaná webem ČSOB leží i v /o/pui-theme-pw-ng/images/pui/csob/logos/ — pro produkci si ale radši vyžádej soubor z tiskového oddělení."
+    },
+    {
+      "id": "fio",
+      "name": "Fio banka",
+      "page": "https://www.fio.cz/o-nas/media",
+      "file": "",
+      "note": "Loga ke stažení v PDF, PNG a JPG přímo na stránce."
+    }
+  ]
+}
