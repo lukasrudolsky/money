@@ -320,6 +320,36 @@ for (const n of counts) {
   }
 }
 
+/* ---- 5a. úvodní stránka je přegenerovaná ---------------------------- */
+
+// preview/home.html se generuje z preview/index.html (scripts/build-home.mjs),
+// takže se nemá jak rozejít sama od sebe — jen když někdo změní data a zapomene
+// ji přegenerovat. Kontroluje se to na tom, co z kvízu přebírá.
+const home = await read("preview/home.html").catch(() => null);
+if (home === null) {
+  fail("Chybí preview/home.html — spusť node scripts/build-home.mjs");
+} else {
+  for (const o of [...appOffers, ...appServices]) {
+    const label = o.bank ?? o.name;
+    if (!home.includes(label)) {
+      fail(`preview/home.html neuvádí "${label}" — přegeneruj ji: node scripts/build-home.mjs`);
+    }
+  }
+  for (const o of appOffers) {
+    const amount = o.amount.toLocaleString("cs-CZ").replace(/\s/g, "&nbsp;");
+    if (!home.includes(amount + "&nbsp;Kč")) {
+      fail(`preview/home.html neuvádí částku ${o.amount} Kč u "${o.bank}" — přegeneruj ji`);
+    }
+  }
+  if (!/href="(index\.html|https?:\/\/[^"]+)"/.test(home)) {
+    fail("preview/home.html nemá odkaz na kvíz");
+  }
+  const homeFaces = (home.match(/@font-face \{/g) ?? []).length;
+  if (homeFaces !== faceCalls.length) {
+    fail(`preview/home.html veze ${homeFaces} bloků @font-face, kvíz jich má ${faceCalls.length} — přegeneruj ji`);
+  }
+}
+
 /* ---- 5b. popisky v hlavě slibují to samé co kvíz -------------------- */
 
 // Částka na první obrazovce se počítá z OFFERS, ale v <meta> je opsaná ručně —

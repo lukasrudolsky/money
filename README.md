@@ -6,9 +6,14 @@ bank, a k tomu ukáže služby s uvítacím kreditem.
 ## Dva příkazy
 
 ```
-node scripts/check.mjs          # zkontroluje, že se nic nerozešlo
-node scripts/build-preview.mjs  # vyrobí dist/bonus-quiz.html k publikaci
+node scripts/check.mjs               # zkontroluje, že se nic nerozešlo
+node scripts/build-home.mjs          # přegeneruje preview/home.html z dat kvízu
+node scripts/build-preview.mjs       # vyrobí dist/bonus-quiz.html k publikaci
+node scripts/build-preview.mjs home  # vyrobí dist/home.html k publikaci
 ```
+
+`build-home.mjs` bere volitelně `--quiz-url <adresa>`; bez něj vede tlačítko na
+sousední `index.html`, což platí, když si soubor otevřeš lokálně.
 
 **`check.mjs` pusť po každé změně dat, log nebo písem.** Chytá věci, které se
 vizuálně nepoznají — hlavně to, že se aplikace a náhled rozešly.
@@ -20,6 +25,7 @@ vizuálně nepoznají — hlavně to, že se aplikace a náhled rozešly.
 | `components/BonusQuiz.jsx` | Zdroj pravdy: data, otázky, logika, `@font-face`. |
 | `components/icons.jsx` | Ikony kreslené k písmu, náhrada za `lucide-react`. |
 | `preview/index.html` | **Samostatná kopie** celého kvízu v jednom souboru. |
+| `preview/home.html` | Úvodní stránka s proklikem na kvíz. **Generovaná** z dat kvízu, needituj ji ručně. |
 | `public/logos/`, `public/fonts/` | Oficiální loga a písma, každé s vlastním README. |
 | `public/img/` | Maskot: `mascot.webp` stojí u úvodu, `mascot-cheer.webp` jásá u výsledku. |
 | `scripts/` | Kontrola, build a stahovač log. |
