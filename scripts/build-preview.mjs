@@ -52,8 +52,8 @@ html = cut(html, "\n</body>\n</html>\n", "\n", "patička");
 // CSS. Úvodní stránka ho má v :root rovnou, tam se jen ověří, že tam zůstal.
 if (which === "quiz") {
   html = cut(html, "    --dur: 220ms;", "    --dur: 220ms;\n    color-scheme: dark;", "color-scheme do CSS");
-} else if (!html.includes("color-scheme: dark")) {
-  console.error("✗ v úvodní stránce chybí color-scheme: dark v CSS");
+} else if (!html.includes("color-scheme: light")) {
+  console.error("✗ v úvodní stránce chybí color-scheme: light v CSS");
   process.exit(1);
 }
 

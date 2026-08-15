@@ -85,67 +85,74 @@ const html = `<!doctype html>
 <meta name="color-scheme" content="dark">
 <link rel="icon" type="image/png" sizes="32x32" href="${favicon}">
 <meta name="description" content="Banky teď rozdávají dohromady ${POT.toLocaleString("cs-CZ")} Kč za založení účtu. Odpověz na ${QUESTIONS} ${otazek(QUESTIONS)} a poskládáme ti z bonusů nejvyšší možnou částku, na kterou dosáhneš. Bez jména, bez e-mailu, necelá minuta.">
-<meta name="theme-color" content="#022c22">
+<meta name="theme-color" content="#ffffff">
 <title>Kolik ti dají banky za nový účet</title>
 <style>
 ${faces.join("\n")}
 
+  /* Dvě sady barev. Hero zůstává tmavě zeleny, zbytek stránky je bílý,
+     takže tokeny nejde sdílet: uvnitř .hero platí --hero-*, mimo něj ty
+     druhé. Mátová se na bílé ztrácí, proto má stránka vlastní sytější
+     zelenou pro částky, odkazy i tlačítka. */
   :root {
-    --bg: #04352A;
-    --card: rgba(255, 255, 255, 0.06);
-    --card-hover: rgba(255, 255, 255, 0.10);
-    --line: rgba(255, 255, 255, 0.16);
+    --hero-bg: #04352A;
+    --hero-fg: #FFFFFF;
+    --hero-soft: rgba(255, 255, 255, 0.72);
+    --hero-faint: rgba(255, 255, 255, 0.55);
     --mint: #5EEAD4;
-    --mint-dim: rgba(94, 234, 212, 0.14);
     --ink: #022C22;
-    --fg: #FFFFFF;
-    --fg-soft: rgba(255, 255, 255, 0.72);
-    --fg-faint: rgba(255, 255, 255, 0.55);
+
+    --page: #FFFFFF;
+    --fg: #0B2620;
+    --fg-soft: #46605A;
+    --fg-faint: #6B837D;
+    --line: #E3EBE8;
+    --card: #F7FAFA;
+    --accent: #0B5F4B;
+    --accent-soft: #EAF6F2;
+
     --ui: "Schibsted Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
     --display: "Bricolage Grotesque", var(--ui);
     --mascot-w: clamp(380px, 40vw, 620px);
-    color-scheme: dark;
+    color-scheme: light;
   }
 
   * { box-sizing: border-box; }
 
   body {
     margin: 0;
-    background-color: var(--bg);
-    background-image:
-      radial-gradient(90% 40% at 50% 0%, rgba(94, 234, 212, 0.13), transparent 62%),
-      radial-gradient(70% 30% at 88% 4%, rgba(94, 234, 212, 0.07), transparent 70%);
-    background-repeat: no-repeat;
+    background: var(--page);
     color: var(--fg);
     font-family: var(--ui);
     -webkit-font-smoothing: antialiased;
   }
 
   a { color: inherit; }
-  :focus-visible { outline: 2px solid var(--mint); outline-offset: 3px; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .hero :focus-visible { outline-color: var(--mint); }
 
-  /* Kotvy v navigaci: plynulé rolování a odsazení, aby lepkavá lišta
-     nepřekryla nadpis, na který se skočilo. */
   html { scroll-behavior: smooth; }
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
   section { scroll-margin-top: 84px; }
+
+  .wrap { max-width: 1160px; margin: 0 auto; padding-inline: clamp(20px, 5vw, 48px); }
+
+  h1, h2, h3 { font-family: var(--display); letter-spacing: -0.02em; margin: 0; }
+  p { margin: 0; }
 
   /* ---- navigace ---------------------------------------------------- */
 
   .nav {
     position: sticky; top: 0; z-index: 10;
-    background: rgba(4, 53, 42, 0.82);
+    background: rgba(255, 255, 255, 0.88);
     backdrop-filter: blur(12px);
-    border-bottom: 1px solid transparent;
+    border-bottom: 1px solid var(--line);
   }
-  .nav .bar {
-    display: flex; align-items: center; gap: 24px;
-    height: 68px;
-  }
+  .nav .bar { display: flex; align-items: center; gap: 24px; height: 68px; }
   .brand {
     display: inline-flex; align-items: center; gap: 10px;
     text-decoration: none; font-weight: 600; letter-spacing: -0.01em;
-    margin-right: auto;
+    margin-right: auto; color: var(--fg);
   }
   .brand img { width: 32px; height: 32px; border-radius: 8px; display: block; }
   .navlinks { display: none; gap: 24px; }
@@ -158,19 +165,20 @@ ${faces.join("\n")}
   @media (min-width: 860px) { .navlinks { display: flex; } }
   @media (max-width: 420px) { .brand span { display: none; } }
 
-  /* padding-inline, ne zkratka padding: .wrap má vyšší specificitu než
-     section a zkratkou by svislé odsazení sekcí vynuloval. */
-  .wrap { max-width: 1160px; margin: 0 auto; padding-inline: clamp(20px, 5vw, 48px); }
-
-  /* Stejná stupnice jako v kvízu: 8 uvnitř skupiny, 24 mezi částkou
-     a otázkou, 32 mezi sekcemi. */
-  h1, h2, h3 { font-family: var(--display); letter-spacing: -0.02em; margin: 0; }
-  p { margin: 0; }
-
   /* ---- hero -------------------------------------------------------- */
 
-  .hero { position: relative; padding: clamp(56px, 9vh, 104px) 0 clamp(56px, 9vh, 96px); }
-  .hero .col { max-width: 640px; display: grid; }
+  .hero {
+    position: relative;
+    padding: clamp(56px, 9vh, 104px) 0 clamp(56px, 9vh, 96px);
+    background-color: var(--hero-bg);
+    background-image:
+      radial-gradient(90% 60% at 50% 0%, rgba(94, 234, 212, 0.14), transparent 62%),
+      radial-gradient(70% 45% at 88% 6%, rgba(94, 234, 212, 0.08), transparent 70%);
+    background-repeat: no-repeat;
+    color: var(--hero-fg);
+    overflow: hidden;
+  }
+  .hero .col { max-width: 640px; display: grid; position: relative; z-index: 1; }
   .hero .col > * + * { margin-top: 32px; }
   .hero .head { display: grid; }
   .hero .head > * + * { margin-top: 8px; }
@@ -178,7 +186,7 @@ ${faces.join("\n")}
     display: inline-flex; align-items: center; gap: 8px;
     color: var(--mint); font-size: 0.875rem;
   }
-  .hero .lead { font-size: 1.125rem; color: var(--fg-soft); }
+  .hero .lead { font-size: 1.125rem; color: var(--hero-soft); }
   .hero .sum {
     font-family: var(--display);
     font-size: clamp(3.25rem, 11vw, 4.5rem);
@@ -189,7 +197,10 @@ ${faces.join("\n")}
   .hero .pitch { display: grid; margin-top: 32px; }
   .hero .pitch > * + * { margin-top: 8px; }
   .hero h1 { font-size: clamp(1.75rem, 5vw, 2.25rem); line-height: 1.1; font-weight: 600; }
-  .hero .sub { font-size: 1.125rem; color: var(--fg-soft); max-width: 60ch; }
+  .hero .sub { font-size: 1.125rem; color: var(--hero-soft); max-width: 60ch; }
+  .hero .fine { color: var(--hero-faint); }
+  .hero .go { background: var(--mint); color: var(--ink); }
+
   .logorow { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; }
   .logorow .logo { opacity: 0.9; }
   .close { display: grid; justify-items: start; }
@@ -203,10 +214,14 @@ ${faces.join("\n")}
   }
   @media (max-width: 1239px) { .mascot { display: none; } }
 
+  /* Dlaždice loga je bílá. V hero ji od tmavého pozadí oddělí sama, na bílé
+     stránce by zmizela, proto tam dostane linku. */
   .logo {
     display: inline-flex; align-items: center; justify-content: center;
     border-radius: 12px; background: #fff; flex: none; overflow: hidden;
+    border: 1px solid var(--line);
   }
+  .hero .logo { border-color: transparent; }
   .logo img { display: block; object-fit: contain; }
 
   /* ---- tlačítka ---------------------------------------------------- */
@@ -215,7 +230,7 @@ ${faces.join("\n")}
     display: inline-flex; align-items: center; gap: 8px;
     padding: 14px 26px; border-radius: 16px;
     font: inherit; font-size: 1.125rem; text-decoration: none;
-    background: var(--mint); color: var(--ink);
+    background: var(--accent); color: #fff;
     transition: transform 220ms cubic-bezier(.22, 1, .36, 1);
   }
   .go:hover { transform: translateY(-1px); }
@@ -223,56 +238,54 @@ ${faces.join("\n")}
 
   /* ---- sekce ------------------------------------------------------- */
 
-  section { padding: clamp(48px, 7vh, 80px) 0; border-top: 1px solid var(--line); }
+  section { padding: clamp(48px, 7vh, 80px) 0; }
+  section + section { border-top: 1px solid var(--line); }
   section h2 { font-size: clamp(1.5rem, 3.5vw, 2rem); font-weight: 600; margin-bottom: 8px; }
-  section .note { color: var(--fg-faint); font-size: 0.9375rem; max-width: 62ch; }
+  section .note { color: var(--fg-soft); font-size: 0.9375rem; max-width: 62ch; }
   .grid { display: grid; gap: 12px; margin-top: 32px; }
   @media (min-width: 760px) { .steps { grid-template-columns: repeat(3, 1fr); } }
 
-  .card {
-    padding: 20px; border-radius: 16px;
-    background: var(--card); border: 1px solid var(--line);
-  }
+  .card { padding: 20px; border-radius: 16px; background: var(--card); border: 1px solid var(--line); }
   .card .chip {
     display: inline-flex; align-items: center; justify-content: center;
     width: 44px; height: 44px; border-radius: 12px;
-    background: var(--mint-dim); color: var(--mint); margin-bottom: 16px;
+    background: var(--accent-soft); color: var(--accent);
+    font-weight: 600; margin-bottom: 16px;
   }
   .card h3 { font-size: 1.125rem; font-weight: 600; margin-bottom: 8px; }
-  .card p { color: var(--fg-faint); font-size: 0.9375rem; }
+  .card p { color: var(--fg-soft); font-size: 0.9375rem; }
 
   /* ---- řádek nabídky ----------------------------------------------- */
 
   .offer {
     display: flex; align-items: center; gap: 16px;
     padding: 16px; border-radius: 16px;
-    background: var(--card); border: 1px solid var(--line);
+    background: #fff; border: 1px solid var(--line);
   }
-  .offer.best { border-color: var(--mint); background: var(--mint-dim); }
+  .offer.best { border-color: var(--accent); background: var(--accent-soft); }
   .offer .txt { flex: 1; min-width: 0; }
-  .offer .bank { display: block; }
-  .offer .cond { display: block; font-size: 0.875rem; color: var(--fg-faint); }
+  .offer .bank { display: block; font-weight: 500; }
+  .offer .cond { display: block; font-size: 0.875rem; color: var(--fg-soft); }
   .offer .amt {
     font-family: var(--display); font-size: 1.5rem; font-weight: 700;
-    letter-spacing: -0.02em; color: var(--mint);
+    letter-spacing: -0.02em; color: var(--accent);
     white-space: nowrap; font-variant-numeric: tabular-nums;
   }
   .offer .tag {
     margin-left: 8px; font-size: 0.6875rem; letter-spacing: 0.1em;
-    text-transform: uppercase; color: var(--mint);
+    text-transform: uppercase; color: var(--accent); font-weight: 600;
   }
   @media (max-width: 520px) {
     .offer { flex-wrap: wrap; }
     .offer .amt { margin-left: auto; }
   }
 
-  /* ---- závěr ------------------------------------------------------- */
+  /* ---- závěr a patička --------------------------------------------- */
 
   .end { text-align: center; }
   .end h2 { margin-bottom: 24px; }
-  /* ---- patička ----------------------------------------------------- */
 
-  footer { padding: clamp(40px, 6vh, 64px) 0 48px; border-top: 1px solid var(--line); }
+  footer { padding: clamp(40px, 6vh, 64px) 0 48px; border-top: 1px solid var(--line); background: var(--card); }
   .foot { display: grid; gap: 32px; }
   @media (min-width: 760px) { .foot { grid-template-columns: 1.6fr 1fr 1fr; } }
   .foot h3 {
@@ -283,7 +296,7 @@ ${faces.join("\n")}
   .foot ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
   .foot a { text-decoration: none; font-size: 0.9375rem; color: var(--fg-soft); }
   .foot a:hover { color: var(--fg); }
-  .foot .about p { color: var(--fg-faint); font-size: 0.9375rem; max-width: 42ch; }
+  .foot .about p { color: var(--fg-soft); font-size: 0.9375rem; max-width: 42ch; }
   .foot .about .brand { margin: 0 0 12px; }
   .legal { margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--line); }
   .legal p { color: var(--fg-faint); font-size: 0.8125rem; max-width: 76ch; }
