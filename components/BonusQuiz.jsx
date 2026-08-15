@@ -256,7 +256,7 @@ const QUESTIONS = [
   { key: "age", type: "single", icon: CalendarDays, q: "Kolik ti je?", sub: "Odměnu za účet vyplácí banky až od osmnácti.",
     options: [
       { value: "under18", label: "Pod 18" },
-      { value: "18-25", label: "18–25" },
+      { value: "18-25", label: "18-25" },
       { value: "26+", label: "26 a víc" },
     ] },
   { key: "gender", type: "single", icon: Person, q: "Jsi muž, nebo žena?", sub: "Na výběr odměn to nemá vliv.",
@@ -266,7 +266,7 @@ const QUESTIONS = [
     ] },
   { key: "owned", type: "banks", icon: Landmark, q: "Kde už máš účet?", sub: "Odměnu dostaneš jen tam, kde ještě klient nejsi.",
     options: OFFERS.map((o) => ({ value: o.id, label: o.bank, short: o.short, tint: o.tint, logo: o.logo })) },
-  { key: "apps", type: "services", icon: Sparkles, q: "Které z těchhle služeb už používáš?", sub: "Uvítací kredit dávají jen novým uživatelům — na zbytek ti ho ukážeme.",
+  { key: "apps", type: "services", icon: Sparkles, q: "Které z těchhle služeb už používáš?", sub: "Uvítací kredit dávají jen novým uživatelům. Na zbytek ti ho ukážeme.",
     options: SERVICES.map((s) => ({ value: s.id, label: s.name, short: s.short, tint: s.tint, logo: s.logo })) },
   { key: "count", type: "single", icon: Wallet, q: "Kolik účtů si chceš založit?", sub: "Odměny jde posbírat i u víc bank najednou.",
     options: [
@@ -321,8 +321,8 @@ function blocker(a) {
   const byIncome = free.filter((o) => o.minIncome > (INCOME[a.income ?? "yes"] ?? Infinity)).length;
 
   return byCards >= byIncome
-    ? `Nejvíc odměn ti bere počet plateb kartou — ${byCards} ${plural(byCards, "nabídka jich chce", "nabídky jich chtějí", "nabídek jich chce")} víc, než jsi zadal.`
-    : `Nejvíc odměn stojí na příchozí platbě — ${byIncome} ${plural(byIncome, "nabídka ji vyžaduje", "nabídky ji vyžadují", "nabídek ji vyžaduje")} vyšší, než kterou zvládneš.`;
+    ? `Nejvíc odměn ti bere počet plateb kartou: ${byCards} ${plural(byCards, "nabídka jich chce", "nabídky jich chtějí", "nabídek jich chce")} víc, než jsi zadal.`
+    : `Nejvíc odměn stojí na příchozí platbě: ${byIncome} ${plural(byIncome, "nabídka ji vyžaduje", "nabídky ji vyžadují", "nabídek ji vyžaduje")} vyšší, než kterou zvládneš.`;
 }
 
 // Název banky stojí vždycky vedle loga, takže alt zůstává prázdný — jinak by
@@ -600,8 +600,8 @@ export default function BonusQuiz() {
             {/* Počet otázek se počítá, ne opisuje — už se posunul z pěti na sedm. */}
             <p className="text-lg" style={{ opacity: 0.75, maxWidth: "60ch" }}>
               Ber všechny, na které dosáhneš. Odpověz na {total} {otazek(total)} a poskládáme
-              ti z bonusů nejvyšší možnou částku — i s tím, co si u které banky pohlídat,
-              aby ti odměna neutekla.
+              ti z bonusů nejvyšší možnou částku a poradíme, co si u které banky
+              pohlídat, aby ti odměna neutekla.
             </p>
           </div>
 
@@ -644,7 +644,7 @@ export default function BonusQuiz() {
         </h2>
         <p className="text-lg mb-3" style={{ opacity: 0.75 }}>
           Banky platí jen lidem, kteří můžou smlouvu podepsat sami. Do osmnácti si účet založit můžeš,
-          ale potřebuješ k tomu rodiče — a takový účet odměnu nenese.
+          ale potřebuješ k tomu rodiče. Takový účet odměnu nenese.
         </p>
         <p className="text-lg mb-8" style={{ opacity: 0.75 }}>
           Sepsali jsme, které účty od 15 let stojí za to a co k založení potřebuješ.
@@ -764,8 +764,7 @@ export default function BonusQuiz() {
             {/* Částka tu chybí schválně — viz komentář u SERVICES. Radši to
                 přiznat než tipovat číslo, které se do dvou týdnů rozejde. */}
             <p className="text-sm mb-5" style={{ opacity: 0.65 }}>
-              Tyhle služby platí novým uživatelům. Kolik přesně, určuje aktuální akce —
-              proto to tady netipujeme, uvidíš to při registraci.
+              Výši kreditu určuje aktuální akce, uvidíš ji při registraci.
             </p>
             <div className="grid gap-3 svcs">
               {services.map((s) => (

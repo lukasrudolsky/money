@@ -739,7 +739,7 @@
       q: "Kolik ti je?", sub: "Odměnu za účet vyplácí banky až od osmnácti.",
       options: [
         { value: "under18", label: "Pod 18" },
-        { value: "18-25", label: "18–25" },
+        { value: "18-25", label: "18-25" },
         { value: "26+", label: "26 a víc" },
       ],
     },
@@ -758,7 +758,7 @@
     },
     {
       key: "apps", type: "services", icon: "sparkles",
-      q: "Které z těchhle služeb už používáš?", sub: "Uvítací kredit dávají jen novým uživatelům — na zbytek ti ho ukážeme.",
+      q: "Které z těchhle služeb už používáš?", sub: "Uvítací kredit dávají jen novým uživatelům. Na zbytek ti ho ukážeme.",
       options: SERVICES.map((s) => ({ value: s.id, label: s.name })),
     },
     {
@@ -1031,7 +1031,7 @@
       // Počet otázek se počítá, ne opisuje — už se posunul z pěti na sedm.
       '<div class="pitch"><h2>Kolik z toho je pro tebe?</h2>' +
       '<p class="sub">Ber všechny, na které dosáhneš. Odpověz na ' + total + " " + otazek(total) +
-      " a poskládáme ti z bonusů nejvyšší možnou částku — i s tím, " +
+      " a poskládáme ti z bonusů nejvyšší možnou částku a poradíme, " +
       "co si u které banky pohlídat, aby ti odměna neutekla.</p></div>" +
       '<div class="logorow">' + OFFERS.map((o) => logo(o.id, 48)).join("") + "</div>" +
       '<div class="close"><div class="row">' +
@@ -1048,7 +1048,7 @@
       '<span class="chip" style="width:56px;height:56px;border-radius:16px;margin-bottom:24px">' + icon("calendar", 26) + "</span>" +
       "<h2>Odměny za účet jsou až od 18 let</h2>" +
       '<p class="sub" style="margin-bottom:12px">Banky platí jen lidem, kteří můžou smlouvu podepsat sami. ' +
-      "Do osmnácti si účet založit můžeš, ale potřebuješ k tomu rodiče — a takový účet odměnu nenese.</p>" +
+      "Do osmnácti si účet založit můžeš, ale potřebuješ k tomu rodiče. Takový účet odměnu nenese.</p>" +
       '<p class="sub">Sepsali jsme, které účty od 15 let stojí za to a co k založení potřebuješ.</p>' +
       '<div class="row">' +
       '<button class="go" data-act="minors">Účty od 15 let ' + icon("arrow", 18) + "</button>" +
@@ -1145,10 +1145,10 @@
         (blocked.length === 0
           ? "Účet máš už u všech bank, které teď odměnu dávají."
           : byCards >= byIncome
-            ? "Nejvíc odměn ti bere počet plateb kartou — " + byCards + " " +
+            ? "Nejvíc odměn ti bere počet plateb kartou: " + byCards + " " +
               plural(byCards, "nabídka jich chce", "nabídky jich chtějí", "nabídek jich chce") +
               " víc, než jsi zadal."
-            : "Nejvíc odměn stojí na příchozí platbě — " + byIncome + " " +
+            : "Nejvíc odměn stojí na příchozí platbě: " + byIncome + " " +
               plural(byIncome, "nabídka ji vyžaduje", "nabídky ji vyžadují", "nabídek ji vyžaduje") +
               " vyšší, než kterou zvládneš.") +
         "</p>" +
