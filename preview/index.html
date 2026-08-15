@@ -15,12 +15,12 @@
      výskyt a doslovný zápis v komentáři by mu posunul řez sem.) Když se kvíz
      zasazuje do aplikace, patří tyhle texty do její hlavy; doslovné znění
      je v README. -->
-<meta name="description" content="Banky teď rozdávají dohromady 7 000 Kč za založení účtu. Sedm otázek a uvidíš, na které odměny dosáhneš právě ty. Neptáme se na jméno ani e-mail, zabere to necelou minutu.">
+<meta name="description" content="Banky teď rozdávají dohromady 7 000 Kč za založení účtu. Skoro každá odměna má podmínku — 7 otázek a uvidíš, na které dosáhneš právě ty. Neptáme se na jméno ani e-mail, zabere to necelou minutu.">
 <meta name="theme-color" content="#022c22">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="cs_CZ">
 <meta property="og:title" content="Kolik ti dají banky za nový účet">
-<meta property="og:description" content="Banky teď rozdávají dohromady 7 000 Kč za založení účtu. Sedm otázek a uvidíš, na které odměny dosáhneš právě ty.">
+<meta property="og:description" content="Banky teď rozdávají dohromady 7 000 Kč za založení účtu. Skoro každá odměna má podmínku — 7 otázek a uvidíš, na které dosáhneš právě ty.">
 <!-- Bez og:image schválně: obrázek musí mít absolutní URL, kterou tahle
      samostatná stránka nemá. Karta zůstane textová, proto summary, ne
      summary_large_image — ten bez obrázku vykreslí prázdné místo. -->
@@ -864,6 +864,7 @@
       '<img src="' + LOGOS[id] + '" alt="" width="' + (w - 12) + '" height="' + (h - 14) + '"></span>';
   }
 
+  const otazek = (n) => (n === 1 ? "otázku" : n < 5 ? "otázky" : "otázek");
   const czk = (n) => n.toLocaleString("cs-CZ") + " Kč";
   // Čeština má tři tvary: 1 / 2–4 / 5 a víc. Dvě větve („jedna" a „ostatní")
   // nestačí — dvojka i trojka vyjdou v prázdném výsledku úplně běžně.
@@ -1027,13 +1028,14 @@
       '<div class="eyebrow">' + icon("sparkles", 16) + "<span>Odměny za založení účtu</span></div>" +
       '<p class="lead">Banky teď rozdávají dohromady</p>' +
       '<p class="sum">' + czk(POT) + "</p></div>" +
+      // Počet otázek se počítá, ne opisuje — už se posunul z pěti na sedm.
       '<div class="pitch"><h2>Kolik z toho můžeš získat ty?</h2>' +
-      '<p class="sub">Sedm otázek na to, kolik ti přijde na účet a kolikrát měsíčně platíš kartou. ' +
-      "Ukážeme jen odměny, na které opravdu dosáhneš — ne celý ceník. A k tomu služby, " +
-      "které novým uživatelům dávají uvítací kredit.</p></div>" +
+      '<p class="sub">Skoro každá odměna má podmínku: výplata na účet, deset plateb ' +
+      "kartou měsíčně. Odpovíš na " + total + " " + otazek(total) + " a ukážeme jen ty, " +
+      "na které dosáhneš — a k tomu služby, které platí novým uživatelům.</p></div>" +
       '<div class="logorow">' + OFFERS.map((o) => logo(o.id, 48)).join("") + "</div>" +
       '<div class="close"><div class="row">' +
-      '<button class="go" data-act="start">Spustit kvíz ' + icon("arrow", 18) + "</button>" +
+      '<button class="go" data-act="start">Zjistit, na co dosáhnu ' + icon("arrow", 18) + "</button>" +
       '<span class="hintline">nebo stiskni <strong>Enter ↵</strong></span>' +
       "</div>" +
       '<p class="fine">Zabere to necelou minutu. Neptáme se na jméno ani e-mail.</p>' +

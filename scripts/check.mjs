@@ -297,18 +297,26 @@ if (appIncome && pvIncome && appIncome !== pvIncome) {
   fail(`INCOME se rozešel\n    komponenta: ${appIncome}\n    náhled:     ${pvIncome}`);
 }
 
-// Úvod slibuje počet otázek slovem. Přidaná otázka ten slib tiše zneplatní —
-// nic nespadne, jen na první obrazovce stojí lež.
-const NUMERALS = { 5: "Pět", 6: "Šest", 7: "Sedm", 8: "Osm", 9: "Devět", 10: "Deset" };
-const promised = NUMERALS[appQuestionKeys.length];
+// Počet otázek na první obrazovce se počítá z QUESTIONS, takže se rozejít
+// nemůže. Kontrola hlídá, že se počítat nepřestal — přepsat ho zpátky na číslo
+// natvrdo je přesně ten krok, po kterém tam přidaná otázka nechá lež.
 for (const [src, where] of [[component, "BonusQuiz.jsx"], [preview, "preview/index.html"]]) {
-  const m = src.match(/([A-ZŠČŘŽ][a-zěščřžýáíéúůňť]+) otázek na to/);
-  if (!m) {
-    fail(`${where}: nenašel jsem v úvodu slib „… otázek na to" — buď zmizel, nebo má kvíz míň než pět otázek a věta potřebuje jiný tvar`);
-  } else if (!promised) {
-    fail(`${where}: kvíz má ${appQuestionKeys.length} otázek, pro tenhle počet nemám v check.mjs číslovku`);
-  } else if (m[1] !== promised) {
-    fail(`${where}: úvod slibuje „${m[1]} otázek", ale kvíz jich má ${appQuestionKeys.length} („${promised}")`);
+  if (!/otazek\(total\)/.test(src)) {
+    fail(`${where}: úvod už nepočítá počet otázek přes otazek(total) — pokud je tam číslo natvrdo, přidaná otázka ho tiše zneplatní`);
+  }
+}
+
+// V hlavě dokumentu se počítat nedá, ta se vykresluje dřív než skript, takže
+// tam číslo opsané je a musí sedět na QUESTIONS.
+const questionCount = appQuestionKeys.length;
+const headForCount = preview.slice(0, Math.max(0, preview.indexOf("<style>")));
+const counts = [...headForCount.matchAll(/(\d+)\s+otázek/g)].map((m) => Number(m[1]));
+if (counts.length === 0) {
+  notes.push("Popisky v hlavě neuvádějí počet otázek — není co porovnat s QUESTIONS");
+}
+for (const n of counts) {
+  if (n !== questionCount) {
+    fail(`Popisky v hlavě slibují ${n} otázek, ale kvíz jich má ${questionCount} — přepiš <meta> v preview/index.html (a stejný text v aplikaci)`);
   }
 }
 

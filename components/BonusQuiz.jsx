@@ -45,6 +45,8 @@ const INCOME = { yes: Infinity, partial: 10000, no: 0 };
 
 const POT = OFFERS.reduce((s, o) => s + o.amount, 0);
 
+const otazek = (n) => (n === 1 ? "otázku" : n < 5 ? "otázky" : "otázek");
+
 const BG = "#04352A";
 const CARD = "rgba(255,255,255,0.06)";
 const LINE = "rgba(255,255,255,0.16)";
@@ -595,10 +597,11 @@ export default function BonusQuiz() {
             <h2 className="text-3xl sm:text-4xl" style={{ fontFamily: DISPLAY, lineHeight: 1.1, letterSpacing: "-0.02em" }}>
               Kolik z toho můžeš získat ty?
             </h2>
+            {/* Počet otázek se počítá, ne opisuje — už se posunul z pěti na sedm. */}
             <p className="text-lg" style={{ opacity: 0.75, maxWidth: "60ch" }}>
-              Sedm otázek na to, kolik ti přijde na účet a kolikrát měsíčně platíš kartou.
-              Ukážeme jen odměny, na které opravdu dosáhneš — ne celý ceník. A k tomu služby,
-              které novým uživatelům dávají uvítací kredit.
+              Skoro každá odměna má podmínku: výplata na účet, deset plateb kartou měsíčně.
+              Odpovíš na {total} {otazek(total)} a ukážeme jen ty, na které dosáhneš —
+              a k tomu služby, které platí novým uživatelům.
             </p>
           </div>
 
@@ -613,7 +616,7 @@ export default function BonusQuiz() {
               <button onClick={() => go(0)}
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl text-lg"
                 style={{ background: MINT, color: INK }}>
-                Spustit kvíz <ArrowRight size={18} />
+                Zjistit, na co dosáhnu <ArrowRight size={18} />
               </button>
               <span className="text-sm hidden sm:inline" style={{ opacity: 0.55 }}>
                 nebo stiskni <strong>Enter ↵</strong>
