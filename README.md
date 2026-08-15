@@ -57,9 +57,9 @@ ve vyhledávání a v náhledu odkazu na sítích:
 | Co | Text |
 | --- | --- |
 | `<title>` | Kolik ti dají banky za nový účet |
-| `description` | Banky teď rozdávají dohromady 7 000 Kč za založení účtu. Sedm otázek a uvidíš, na které odměny dosáhneš právě ty. Neptáme se na jméno ani e-mail, zabere to necelou minutu. |
+| `description` | Banky teď rozdávají dohromady 7 000 Kč za založení účtu. Odpověz na 7 otázek a poskládáme ti z bonusů nejvyšší možnou částku, na kterou dosáhneš. Bez jména, bez e-mailu, necelá minuta. |
 | `og:title` | Kolik ti dají banky za nový účet |
-| `og:description` | Banky teď rozdávají dohromady 7 000 Kč za založení účtu. Sedm otázek a uvidíš, na které odměny dosáhneš právě ty. |
+| `og:description` | Banky teď rozdávají dohromady 7 000 Kč za založení účtu. Odpověz na 7 otázek a poskládáme ti z bonusů nejvyšší možnou částku, na kterou dosáhneš. |
 | `theme-color` | `#022c22` (stejná zelená jako pozadí kvízu) |
 | `og:locale` | `cs_CZ`, `twitter:card` je `summary` |
 

@@ -15,12 +15,12 @@
      výskyt a doslovný zápis v komentáři by mu posunul řez sem.) Když se kvíz
      zasazuje do aplikace, patří tyhle texty do její hlavy; doslovné znění
      je v README. -->
-<meta name="description" content="Banky teď rozdávají dohromady 7 000 Kč za založení účtu. Skoro každá odměna má podmínku — 7 otázek a uvidíš, na které dosáhneš právě ty. Neptáme se na jméno ani e-mail, zabere to necelou minutu.">
+<meta name="description" content="Banky teď rozdávají dohromady 7 000 Kč za založení účtu. Odpověz na 7 otázek a poskládáme ti z bonusů nejvyšší možnou částku, na kterou dosáhneš. Bez jména, bez e-mailu, necelá minuta.">
 <meta name="theme-color" content="#022c22">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="cs_CZ">
 <meta property="og:title" content="Kolik ti dají banky za nový účet">
-<meta property="og:description" content="Banky teď rozdávají dohromady 7 000 Kč za založení účtu. Skoro každá odměna má podmínku — 7 otázek a uvidíš, na které dosáhneš právě ty.">
+<meta property="og:description" content="Banky teď rozdávají dohromady 7 000 Kč za založení účtu. Odpověz na 7 otázek a poskládáme ti z bonusů nejvyšší možnou částku, na kterou dosáhneš.">
 <!-- Bez og:image schválně: obrázek musí mít absolutní URL, kterou tahle
      samostatná stránka nemá. Karta zůstane textová, proto summary, ne
      summary_large_image — ten bez obrázku vykreslí prázdné místo. -->
@@ -1029,16 +1029,16 @@
       '<p class="lead">Banky teď rozdávají dohromady</p>' +
       '<p class="sum">' + czk(POT) + "</p></div>" +
       // Počet otázek se počítá, ne opisuje — už se posunul z pěti na sedm.
-      '<div class="pitch"><h2>Kolik z toho můžeš získat ty?</h2>' +
-      '<p class="sub">Skoro každá odměna má podmínku: výplata na účet, deset plateb ' +
-      "kartou měsíčně. Odpovíš na " + total + " " + otazek(total) + " a ukážeme jen ty, " +
-      "na které dosáhneš — a k tomu služby, které platí novým uživatelům.</p></div>" +
+      '<div class="pitch"><h2>Kolik z toho je pro tebe?</h2>' +
+      '<p class="sub">Ber všechny, na které dosáhneš. Odpověz na ' + total + " " + otazek(total) +
+      " a poskládáme ti z bonusů nejvyšší možnou částku — i s tím, " +
+      "co si u které banky pohlídat, aby ti odměna neutekla.</p></div>" +
       '<div class="logorow">' + OFFERS.map((o) => logo(o.id, 48)).join("") + "</div>" +
       '<div class="close"><div class="row">' +
       '<button class="go" data-act="start">Zjistit, na co dosáhnu ' + icon("arrow", 18) + "</button>" +
       '<span class="hintline">nebo stiskni <strong>Enter ↵</strong></span>' +
       "</div>" +
-      '<p class="fine">Zabere to necelou minutu. Neptáme se na jméno ani e-mail.</p>' +
+      '<p class="fine">Necelá minuta. Bez jména, bez e-mailu.</p>' +
       "</div></div>";
     bind();
   }

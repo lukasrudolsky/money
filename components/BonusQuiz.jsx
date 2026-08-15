@@ -595,13 +595,13 @@ export default function BonusQuiz() {
 
           <div className="pitch">
             <h2 className="text-3xl sm:text-4xl" style={{ fontFamily: DISPLAY, lineHeight: 1.1, letterSpacing: "-0.02em" }}>
-              Kolik z toho můžeš získat ty?
+              Kolik z toho je pro tebe?
             </h2>
             {/* Počet otázek se počítá, ne opisuje — už se posunul z pěti na sedm. */}
             <p className="text-lg" style={{ opacity: 0.75, maxWidth: "60ch" }}>
-              Skoro každá odměna má podmínku: výplata na účet, deset plateb kartou měsíčně.
-              Odpovíš na {total} {otazek(total)} a ukážeme jen ty, na které dosáhneš —
-              a k tomu služby, které platí novým uživatelům.
+              Ber všechny, na které dosáhneš. Odpověz na {total} {otazek(total)} a poskládáme
+              ti z bonusů nejvyšší možnou částku — i s tím, co si u které banky pohlídat,
+              aby ti odměna neutekla.
             </p>
           </div>
 
@@ -623,7 +623,7 @@ export default function BonusQuiz() {
               </span>
             </div>
             <p className="text-sm" style={{ opacity: 0.55 }}>
-              Zabere to necelou minutu. Neptáme se na jméno ani e-mail.
+              Necelá minuta. Bez jména, bez e-mailu.
             </p>
           </div>
         </div>
