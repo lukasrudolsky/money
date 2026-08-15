@@ -83,6 +83,34 @@
       "page": "https://www.revolut.com/cs-CZ/",
       "file": "https://assets.revolut.com/assets/favicons/apple-touch-icon.png",
       "note": "Služba, ne banka."
+    },
+    {
+      "id": "bondster",
+      "name": "Bondster",
+      "page": "https://bondster.com/cz/",
+      "file": "https://bondster.com/wp-content/themes/digiverse-bondster/assets/images/bondster-logo.svg",
+      "note": "Logo z hlavičky bondster.com (WP téma digiverse-bondster). Wordmark, ne značka."
+    },
+    {
+      "id": "portu",
+      "name": "Portu",
+      "page": "https://portu.cz/",
+      "file": "https://portu.cz/apple-touch-icon.png",
+      "note": "Dotyková ikona z portu.cz."
+    },
+    {
+      "id": "fondee",
+      "name": "Fondee",
+      "page": "https://www.fondee.cz/",
+      "file": "https://www.fondee.cz/favicon/favicon.svg",
+      "note": "Favicona z hlavičky fondee.cz (SVG)."
+    },
+    {
+      "id": "xtb",
+      "name": "XTB",
+      "page": "https://www.xtb.com/cz",
+      "file": "https://xas-cdn.xtb.com/build/twigImages/icons/apple-icon-180x180.png",
+      "note": "Dotyková ikona z CDN XTB."
     }
   ]
 }

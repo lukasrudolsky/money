@@ -14,11 +14,19 @@ import {
 // se lidem nabízela odměna, na kterou svým příjmem nedosáhli.
 const OFFERS = [
   { id: "airbank", bank: "Air Bank", short: "AB", tint: "#F97316", logo: "/logos/airbank.png", amount: 1500, minIncome: 15000, minCards: 5, note: "Příchozí platba od 15 000 Kč, 5 plateb kartou" },
-  { id: "raiffeisen", bank: "Raiffeisenbank", short: "RB", tint: "#FACC15", logo: "/logos/raiffeisenbank.svg", amount: 2000, minIncome: 15000, minCards: 10, note: "Výplata na účet, 10 plateb kartou" },
+  { id: "raiffeisen", bank: "Raiffeisenbank", short: "RB", tint: "#FACC15", logo: "/logos/raiffeisenbank.svg", amount: 3000, minIncome: 15000, minCards: 10, note: "Výplata na účet, 10 plateb kartou" },
   { id: "moneta", bank: "Moneta", short: "MO", tint: "#38BDF8", logo: "/logos/moneta.png", amount: 1200, minIncome: 10000, minCards: 0, note: "Příchozí platba od 10 000 Kč" },
   { id: "mbank", bank: "mBank", short: "mB", tint: "#FB7185", logo: "/logos/mbank.png", amount: 1000, minIncome: 0, minCards: 5, note: "5 plateb kartou po dobu 2 měsíců" },
   { id: "csob", bank: "ČSOB", short: "ČS", tint: "#818CF8", logo: "/logos/csob.svg", amount: 800, minIncome: 0, minCards: 10, note: "10 plateb kartou v prvním měsíci" },
   { id: "fio", bank: "Fio banka", short: "Fi", tint: "#4ADE80", logo: "/logos/fio.png", amount: 500, minIncome: 0, minCards: 0, note: "Bez podmínek, stačí aktivovat účet" },
+  { id: "bondster", bank: "Bondster", short: "Bo", tint: "#12A66E", logo: "/logos/bondster.svg", amount: 1000, minIncome: 0, minCards: 0, note: "Registrace a investice od 5 000 Kč" },
+  // Tři níž mají DEMO částku. Portu a Fondee dávají tři měsíce správy zdarma,
+  // XTB akcii v hodnotě zhruba 15 až 30 dolarů — ani jedno není pevná koruna,
+  // takže je tu jen dosazený odhad, aby se nabídka dala zařadit a spočítat.
+  // Před ostrým během to musí nahradit skutečná čísla, nebo tyhle řádky pryč.
+  { id: "portu", bank: "Portu", short: "Po", tint: "#1B4DFF", logo: "/logos/portu.png", amount: 1000, minIncome: 0, minCards: 0, demo: true, note: "Tři měsíce investování bez poplatku, vklad od 1 000 Kč" },
+  { id: "fondee", bank: "Fondee", short: "Fo", tint: "#00C2A8", logo: "/logos/fondee.svg", amount: 1000, minIncome: 0, minCards: 0, demo: true, note: "Tři měsíce správy zdarma po registraci s kódem" },
+  { id: "xtb", bank: "XTB", short: "XT", tint: "#E30613", logo: "/logos/xtb.png", amount: 500, minIncome: 0, minCards: 0, demo: true, note: "Akcie zdarma k novému účtu v akčním období" },
 ];
 
 // Služby, které platí novým uživatelům uvítací kredit. Schválně tu NENÍ pole
@@ -52,7 +60,7 @@ const CARD = "rgba(255,255,255,0.06)";
 const LINE = "rgba(255,255,255,0.16)";
 const MINT = "#5EEAD4";
 const INK = "#022C22";
-const LETTERS = "ABCDEFGH".split("");
+const LETTERS = "ABCDEFGHIJKLMN".split("");
 
 // step === INTRO je úvodní obrazovka. Otázky začínají nulou, aby zbytek
 // (ukazatel průběhu, „Zpět", počítání) zůstal na indexech beze změny.
@@ -240,7 +248,7 @@ const BASE_CSS = `
 .wide .svcs { grid-template-columns: repeat(auto-fill, minmax(440px, 1fr)); }
 .wide .offers .offer { display: flex; flex-direction: column; }
 .wide .offers .offer .foot { margin-top: auto; }
-/* Nejvyšší odměna drží celou šířku: je to ta jediná, kterou většina lidí
+/* Nejvyšší bonus drží celou šířku: je to ta jediná, kterou většina lidí
    vezme, a v mřížce by zapadla mezi ostatní jako kterákoli jiná karta. */
 .wide .offers .offer.best { grid-column: 1 / -1; }
 
@@ -253,22 +261,22 @@ const BASE_CSS = `
 `;
 
 const QUESTIONS = [
-  { key: "age", type: "single", icon: CalendarDays, q: "Kolik ti je?", sub: "Odměnu za účet vyplácí banky až od osmnácti.",
+  { key: "age", type: "single", icon: CalendarDays, q: "Kolik ti je?", sub: "Bonus za účet vyplácí banky až od osmnácti.",
     options: [
       { value: "under18", label: "Pod 18" },
       { value: "18-25", label: "18-25" },
       { value: "26+", label: "26 a víc" },
     ] },
-  { key: "gender", type: "single", icon: Person, q: "Jsi muž, nebo žena?", sub: "Na výběr odměn to nemá vliv.",
+  { key: "gender", type: "single", icon: Person, q: "Jsi muž, nebo žena?", sub: "Na výběr bonusů to nemá vliv.",
     options: [
       { value: "male", label: "Muž", icon: Male },
       { value: "female", label: "Žena", icon: Female },
     ] },
-  { key: "owned", type: "banks", icon: Landmark, q: "Kde už máš účet?", sub: "Odměnu dostaneš jen tam, kde ještě klient nejsi.",
+  { key: "owned", type: "banks", icon: Landmark, q: "Kde už máš účet?", sub: "Bonus dostaneš jen tam, kde ještě klient nejsi.",
     options: OFFERS.map((o) => ({ value: o.id, label: o.bank, short: o.short, tint: o.tint, logo: o.logo })) },
   { key: "apps", type: "services", icon: Sparkles, q: "Které z těchhle služeb už používáš?", sub: "Uvítací kredit dávají jen novým uživatelům. Na zbytek ti ho ukážeme.",
     options: SERVICES.map((s) => ({ value: s.id, label: s.name, short: s.short, tint: s.tint, logo: s.logo })) },
-  { key: "count", type: "single", icon: Wallet, q: "Kolik účtů si chceš založit?", sub: "Odměny jde posbírat i u víc bank najednou.",
+  { key: "count", type: "single", icon: Wallet, q: "Kolik účtů si chceš založit?", sub: "Bonusy jde posbírat i u víc bank najednou.",
     options: [
       { value: 1, label: "Jeden", hint: "Chci jeden a mít klid", icon: Wallet },
       { value: 3, label: "Dva až tři", hint: "Zvládnu si pohlídat víc podmínek", icon: Coins },
@@ -276,7 +284,7 @@ const QUESTIONS = [
     ] },
   // Hodnoty odpovídají klíčům v INCOME. Prostřední možnost říká konkrétní
   // částku schválně — „pár tisíc" dřív pouštělo dál i odměny za 15 000 Kč.
-  { key: "income", type: "single", icon: Banknote, q: "Můžeš si nechat posílat výplatu na nový účet?", sub: "Na příchozí platbě stojí ty nejvyšší odměny.",
+  { key: "income", type: "single", icon: Banknote, q: "Můžeš si nechat posílat výplatu na nový účet?", sub: "Na příchozí platbě stojí ty nejvyšší bonusy.",
     options: [
       { value: "yes", label: "Ano", hint: "Výplatu tam přesměruju", icon: Banknote },
       { value: "partial", label: "Výplatu ne", hint: "Ale 10 000 Kč měsíčně tam pošlu", icon: Coins },
@@ -284,7 +292,7 @@ const QUESTIONS = [
     ] },
   // Hranice musí sedět na minCards v OFFERS: „do pěti" s hodnotou 4 brala
   // lidem, kteří pět plateb zvládnou, odměnu s minCards 5.
-  { key: "cards", type: "single", icon: CreditCard, q: "Kolik plateb kartou zvládneš měsíčně?", sub: "U většiny odměn musíš kartou párkrát zaplatit. Poslední otázka.",
+  { key: "cards", type: "single", icon: CreditCard, q: "Kolik plateb kartou zvládneš měsíčně?", sub: "U většiny bonusů musíš kartou párkrát zaplatit. Poslední otázka.",
     options: [
       { value: 4, label: "Čtyři a míň", icon: CreditCard },
       { value: 9, label: "Pět až devět", icon: CreditCard },
@@ -315,14 +323,14 @@ function matchOffers(a) {
 // výsledku říká adresně místo obecného „zkus něco změnit".
 function blocker(a) {
   const free = OFFERS.filter((o) => !(a.owned || []).includes(o.id));
-  if (free.length === 0) return "Účet máš už u všech bank, které teď odměnu dávají.";
+  if (free.length === 0) return "Účet máš už u všech bank, které teď bonus dávají.";
 
   const byCards = free.filter((o) => o.minCards > (a.cards ?? 99)).length;
   const byIncome = free.filter((o) => o.minIncome > (INCOME[a.income ?? "yes"] ?? Infinity)).length;
 
   return byCards >= byIncome
-    ? `Nejvíc odměn ti bere počet plateb kartou: ${byCards} ${plural(byCards, "nabídka jich chce", "nabídky jich chtějí", "nabídek jich chce")} víc, než jsi zadal.`
-    : `Nejvíc odměn stojí na příchozí platbě: ${byIncome} ${plural(byIncome, "nabídka ji vyžaduje", "nabídky ji vyžadují", "nabídek ji vyžaduje")} vyšší, než kterou zvládneš.`;
+    ? `Nejvíc bonusů ti bere počet plateb kartou: ${byCards} ${plural(byCards, "nabídka jich chce", "nabídky jich chtějí", "nabídek jich chce")} víc, než jsi zadal.`
+    : `Nejvíc bonusů stojí na příchozí platbě: ${byIncome} ${plural(byIncome, "nabídka ji vyžaduje", "nabídky ji vyžadují", "nabídek ji vyžaduje")} vyšší, než kterou zvládneš.`;
 }
 
 // Název banky stojí vždycky vedle loga, takže alt zůstává prázdný — jinak by
@@ -587,7 +595,7 @@ export default function BonusQuiz() {
           <div className="hero">
             <div className="flex items-center gap-2" style={{ color: MINT }}>
               <Sparkles size={16} />
-              <span className="text-sm">Odměny za založení účtu</span>
+              <span className="text-sm">Bonusy za registraci</span>
             </div>
             <p className="text-lg" style={{ opacity: 0.75 }}>Banky teď rozdávají dohromady</p>
             <p className="sum text-6xl sm:text-7xl"><Ticker value={POT} /></p>
@@ -600,8 +608,8 @@ export default function BonusQuiz() {
             {/* Počet otázek se počítá, ne opisuje — už se posunul z pěti na sedm. */}
             <p className="text-lg" style={{ opacity: 0.75, maxWidth: "60ch" }}>
               Ber všechny, na které dosáhneš. Odpověz na {total} {otazek(total)} a poskládáme
-              ti z bonusů nejvyšší možnou částku a poradíme, co si u které banky
-              pohlídat, aby ti odměna neutekla.
+              ti z bonusů nejvyšší možnou částku a poradíme, co si kde pohlídat,
+              aby ti žádný neutekl.
             </p>
           </div>
 
@@ -644,7 +652,7 @@ export default function BonusQuiz() {
         </h2>
         <p className="text-lg mb-3" style={{ opacity: 0.75 }}>
           Banky platí jen lidem, kteří můžou smlouvu podepsat sami. Do osmnácti si účet založit můžeš,
-          ale potřebuješ k tomu rodiče. Takový účet odměnu nenese.
+          ale potřebuješ k tomu rodiče. Takový účet bonus nenese.
         </p>
         <p className="text-lg mb-8" style={{ opacity: 0.75 }}>
           Sepsali jsme, které účty od 15 let stojí za to a co k založení potřebuješ.
@@ -682,7 +690,7 @@ export default function BonusQuiz() {
             </p>
             <p className="text-lg" style={{ opacity: 0.75 }}>
               {matched.length === 0
-                ? "Na tvoje odpovědi zatím nesedí žádná odměna."
+                ? "Na tvoje odpovědi zatím nesedí žádný bonus."
                 : `Tolik můžeš získat u ${matched.length} ${matched.length === 1 ? "banky" : "bank"}.`}
             </p>
           </div>
@@ -714,7 +722,7 @@ export default function BonusQuiz() {
 
         <div className="grid gap-3 offers">
           {matched.map((o, i) => {
-            // Nejvyšší odměna je jediná, kterou většina lidí vezme. Když je
+            // Nejvyšší bonus je jediná, kterou většina lidí vezme. Když je
             // nabídka jen jedna, není co odlišovat — a při shodě částek by
             // odznak dostala první v pořadí, aniž by byla vyšší.
             const best = i === 0 && matched.length > 1 && o.amount > matched[1].amount;
@@ -729,7 +737,7 @@ export default function BonusQuiz() {
               {best && (
                 <span className="inline-flex items-center gap-1.5 mb-3 uppercase"
                   style={{ color: MINT, fontSize: "0.6875rem", letterSpacing: "0.12em" }}>
-                  <TrendingUp size={13} /> Nejvyšší odměna
+                  <TrendingUp size={13} /> Nejvyšší bonus
                 </span>
               )}
               <div className="flex items-center gap-3 mb-3">
@@ -746,9 +754,9 @@ export default function BonusQuiz() {
                   <Check size={15} /> Splňuješ podmínky
                 </span>
                 <a href={`/go/${o.id}`} rel="sponsored nofollow"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl"
                   style={{ background: MINT, color: INK }}>
-                  Získat odměnu <ArrowRight size={16} />
+                  Získat bonus <ArrowRight size={16} />
                 </a>
               </div>
             </div>
@@ -779,7 +787,7 @@ export default function BonusQuiz() {
                     <span className="block text-sm" style={{ opacity: 0.65 }}>{s.note}</span>
                   </span>
                   <a href={`/go/${s.id}`} rel="sponsored nofollow"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm shrink-0"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl text-sm shrink-0"
                     style={{ border: `1px solid ${LINE}`, color: MINT }}>
                     Vyzkoušet <ArrowRight size={14} />
                   </a>
@@ -792,7 +800,7 @@ export default function BonusQuiz() {
         {(matched.length > 0 || services.length > 0) && (
           <>
             <p className="text-sm mt-6" style={{ opacity: 0.55 }}>
-              Odkazy jsou partnerské. Pořadí bank určuje výše odměny, ne provize.
+              Odkazy jsou partnerské. Pořadí určuje výše bonusu, ne provize.
             </p>
             <button onClick={reset} className="mt-4 text-sm underline" style={{ opacity: 0.7 }}>
               Projít znovu

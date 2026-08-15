@@ -1,4 +1,4 @@
-# Bonusový kvíz
+# Bonusrádce
 
 Kvíz, který spočítá, kolik člověk dostane na odměnách za založení účtu u českých
 bank, a k tomu ukáže služby s uvítacím kreditem.
@@ -27,7 +27,7 @@ vizuálně nepoznají — hlavně to, že se aplikace a náhled rozešly.
 | `preview/index.html` | **Samostatná kopie** celého kvízu v jednom souboru. |
 | `preview/home.html` | Úvodní stránka s proklikem na kvíz. **Generovaná** z dat kvízu, needituj ji ručně. |
 | `public/logos/`, `public/fonts/` | Oficiální loga a písma, každé s vlastním README. |
-| `public/img/` | Maskot: `mascot.webp` stojí u úvodu, `mascot-cheer.webp` jásá u výsledku. |
+| `public/img/` | Maskot v kvízu: `mascot.webp` stojí u úvodu, `mascot-cheer.webp` jásá u výsledku. Vlastní obrázky úvodní stránky: `hero.webp`, `paw.webp` (ukazovátko v tlačítkách) a `step-1..3.webp` ke třem krokům. |
 | `scripts/` | Kontrola, build a stahovač log. |
 
 ## Proč to existuje dvakrát
@@ -62,10 +62,10 @@ ve vyhledávání a v náhledu odkazu na sítích:
 
 | Co | Text |
 | --- | --- |
-| `<title>` | Kolik ti dají banky za nový účet |
-| `description` | Banky teď rozdávají dohromady 7 000 Kč za založení účtu. Odpověz na 7 otázek a poskládáme ti z bonusů nejvyšší možnou částku, na kterou dosáhneš. Bez jména, bez e-mailu, necelá minuta. |
-| `og:title` | Kolik ti dají banky za nový účet |
-| `og:description` | Banky teď rozdávají dohromady 7 000 Kč za založení účtu. Odpověz na 7 otázek a poskládáme ti z bonusů nejvyšší možnou částku, na kterou dosáhneš. |
+| `<title>` | Bonusrádce: bonusy za registraci |
+| `description` | Bonusrádce spočítá, na které bonusy za registraci dosáhneš právě ty. Banky teď za samotné založení účtu rozdávají 11 500 Kč a uvítací kredit k tomu dávají další služby. Odpověz na 7 otázek, bez jména a bez e-mailu, do minuty. |
+| `og:title` | Bonusrádce: bonusy za registraci |
+| `og:description` | Bonusrádce spočítá, na které bonusy za registraci dosáhneš právě ty. Banky teď za samotné založení účtu rozdávají 11 500 Kč. Odpověz na 7 otázek, bez jména a bez e-mailu. |
 | `theme-color` | `#022c22` (stejná zelená jako pozadí kvízu) |
 | `og:locale` | `cs_CZ`, `twitter:card` je `summary` |
 
@@ -75,7 +75,7 @@ const metadata`.
 
 Dvě věci, na které pozor:
 
-- **Částka 7 000 Kč je v popiscích opsaná ručně**, protože hlava se vykresluje
+- **Částka 11 500 Kč je v popiscích opsaná ručně**, protože hlava se vykresluje
   dřív než skript. Ve zbytku kvízu se počítá z `OFFERS`. `check.mjs` porovnává
   každou částku v hlavě se součtem, takže přidaná banka shodí kontrolu, ne až
   náhled odkazu.
