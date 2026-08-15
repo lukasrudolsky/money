@@ -124,6 +124,40 @@ ${faces.join("\n")}
   a { color: inherit; }
   :focus-visible { outline: 2px solid var(--mint); outline-offset: 3px; }
 
+  /* Kotvy v navigaci: plynulé rolování a odsazení, aby lepkavá lišta
+     nepřekryla nadpis, na který se skočilo. */
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  section { scroll-margin-top: 84px; }
+
+  /* ---- navigace ---------------------------------------------------- */
+
+  .nav {
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(4, 53, 42, 0.82);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid transparent;
+  }
+  .nav .bar {
+    display: flex; align-items: center; gap: 24px;
+    height: 68px;
+  }
+  .brand {
+    display: inline-flex; align-items: center; gap: 10px;
+    text-decoration: none; font-weight: 600; letter-spacing: -0.01em;
+    margin-right: auto;
+  }
+  .brand img { width: 32px; height: 32px; border-radius: 8px; display: block; }
+  .navlinks { display: none; gap: 24px; }
+  .navlinks a {
+    text-decoration: none; font-size: 0.9375rem; color: var(--fg-soft);
+    transition: color 140ms cubic-bezier(.4, 0, .2, 1);
+  }
+  .navlinks a:hover { color: var(--fg); }
+  .nav .go { padding: 9px 18px; font-size: 0.9375rem; }
+  @media (min-width: 860px) { .navlinks { display: flex; } }
+  @media (max-width: 420px) { .brand span { display: none; } }
+
   /* padding-inline, ne zkratka padding: .wrap má vyšší specificitu než
      section a zkratkou by svislé odsazení sekcí vynuloval. */
   .wrap { max-width: 1160px; margin: 0 auto; padding-inline: clamp(20px, 5vw, 48px); }
@@ -236,14 +270,44 @@ ${faces.join("\n")}
 
   .end { text-align: center; }
   .end h2 { margin-bottom: 24px; }
-  footer { padding: 32px 0 48px; border-top: 1px solid var(--line); }
-  footer p { color: var(--fg-faint); font-size: 0.875rem; max-width: 62ch; }
-  footer p + p { margin-top: 8px; }
+  /* ---- patička ----------------------------------------------------- */
+
+  footer { padding: clamp(40px, 6vh, 64px) 0 48px; border-top: 1px solid var(--line); }
+  .foot { display: grid; gap: 32px; }
+  @media (min-width: 760px) { .foot { grid-template-columns: 1.6fr 1fr 1fr; } }
+  .foot h3 {
+    font-family: var(--ui); font-size: 0.8125rem; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--fg-faint); margin-bottom: 12px;
+  }
+  .foot ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .foot a { text-decoration: none; font-size: 0.9375rem; color: var(--fg-soft); }
+  .foot a:hover { color: var(--fg); }
+  .foot .about p { color: var(--fg-faint); font-size: 0.9375rem; max-width: 42ch; }
+  .foot .about .brand { margin: 0 0 12px; }
+  .legal { margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--line); }
+  .legal p { color: var(--fg-faint); font-size: 0.8125rem; max-width: 76ch; }
+  .legal p + p { margin-top: 8px; }
 </style>
 </head>
 <body>
 
-<header class="hero">
+<nav class="nav">
+  <div class="wrap bar">
+    <a class="brand" href="#top">
+      <img src="${favicon}" alt="">
+      <span>Kolik ti dají banky</span>
+    </a>
+    <div class="navlinks">
+      <a href="#jak">Jak to funguje</a>
+      <a href="#odmeny">Odměny bank</a>
+      <a href="#sluzby">Služby</a>
+    </div>
+    <a class="go" href="__QUIZ__">Spustit kvíz</a>
+  </div>
+</nav>
+
+<header class="hero" id="top">
   <img class="mascot" src="${mascot}" alt="" aria-hidden="true">
   <div class="wrap">
     <div class="col">
@@ -274,7 +338,7 @@ ${faces.join("\n")}
 </header>
 
 <main>
-  <section class="wrap">
+  <section class="wrap" id="jak">
     <h2>Jak to funguje</h2>
     <p class="note">Kvíz nesbírá kontakty. Ptá se jen na to, co rozhoduje o tom, jestli ti banka odměnu vyplatí.</p>
     <div class="grid steps">
@@ -286,7 +350,7 @@ ${STEPS.map(([t, d], i) => `      <div class="card">
     </div>
   </section>
 
-  <section class="wrap">
+  <section class="wrap" id="odmeny">
     <h2>Co teď banky dávají</h2>
     <p class="note">Nejvyšší odměny stojí na příchozí výplatě, ty nejnižší nechtějí nic. Kvíz z toho vybere, co sedí na tebe.</p>
     <div class="grid">
@@ -301,7 +365,7 @@ ${OFFERS.slice().sort((a, b) => b.amount - a.amount).map((o, i) => `      <div c
     </div>
   </section>
 
-  <section class="wrap">
+  <section class="wrap" id="sluzby">
     <h2>Kde ještě dostaneš uvítací kredit</h2>
     <p class="note">Výši kreditu určuje aktuální akce, uvidíš ji při registraci. Proto tady žádnou částku netipujeme.</p>
     <div class="grid">
@@ -323,9 +387,34 @@ ${SERVICES.map((s) => `      <div class="offer">
   </section>
 </main>
 
-<footer class="wrap">
-  <p>Odkazy na banky a služby jsou partnerské. Když si přes ně účet založíš, dostaneme provizi od banky. Ty platíš stejně jako kdekoli jinde a pořadí určuje výše odměny, ne provize.</p>
-  <p>Podmínky akcí se mění. Než účet založíš, ověř si aktuální znění u banky.</p>
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div class="about">
+        <span class="brand"><img src="${favicon}" alt=""><span>Kolik ti dají banky</span></span>
+        <p>Srovnáváme odměny, které české banky platí za založení účtu, a počítáme, na které z nich dosáhneš právě ty.</p>
+      </div>
+      <div>
+        <h3>Na stránce</h3>
+        <ul>
+          <li><a href="#jak">Jak to funguje</a></li>
+          <li><a href="#odmeny">Odměny bank</a></li>
+          <li><a href="#sluzby">Služby s kreditem</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Spočítat</h3>
+        <ul>
+          <li><a href="__QUIZ__">Zjistit, na co dosáhnu</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="legal">
+      <p>Odkazy na banky a služby jsou partnerské. Když si přes ně účet založíš, dostaneme provizi od banky. Ty platíš stejně jako kdekoli jinde a pořadí určuje výše odměny, ne provize.</p>
+      <p>Podmínky akcí se mění. Než účet založíš, ověř si aktuální znění u banky. Nejsme banka ani finanční poradce a nezprostředkováváme uzavření smlouvy.</p>
+    </div>
+  </div>
 </footer>
 
 </body>
