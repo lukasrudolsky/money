@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-// Stáhne loga bank do public/logos/ podle scripts/logo-sources.json.
+// Stáhne loga bank i služeb do public/logos/ podle scripts/logo-sources.json.
 //
 //   node scripts/fetch-logos.mjs
 //
-// Banky, které v JSONu nemají vyplněné "file", skript přeskočí a jen vypíše,
+// Položky, které v JSONu nemají vyplněné "file", skript přeskočí a jen vypíše,
 // na které stránce se logo hledá. Nic nepřepisuje naslepo — když stažený soubor
 // nevypadá jako obrázek, nechá na disku to, co tam je.
 
@@ -59,7 +59,7 @@ const todo = [];
 let ok = 0;
 let failed = 0;
 
-for (const bank of cfg.banks) {
+for (const bank of cfg.logos) {
   if (!bank.file) {
     todo.push(bank);
     continue;

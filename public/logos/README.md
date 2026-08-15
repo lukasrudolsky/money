@@ -1,57 +1,63 @@
 # Loga bank
 
-Komponenta `components/BonusQuiz.jsx` načítá logo každé banky z `/logos/<id>.svg`.
-`<id>` odpovídá poli `id` v konstantě `OFFERS`.
+Komponenta `components/BonusQuiz.jsx` načítá logo každé banky z cesty v poli
+`logo` v konstantě `OFFERS`. Přípona se liší podle toho, co banka vydává, takže
+cesta je tam napsaná celá — z `id` se odvodit nedá.
 
-| Soubor | Banka | Oficiální zdroj |
+| Soubor | Banka | Odkud je |
 | --- | --- | --- |
-| `airbank.svg` | Air Bank | [airbank.cz/pro-novinare](https://www.airbank.cz/pro-novinare/) — logo tam není ke stažení, píše se o něj na novinari@airbank.cz |
-| `raiffeisenbank.svg` | Raiffeisenbank | [rb.cz → Pro média → Ke stažení](https://www.rb.cz/informacni-servis/pro-media/ke-stazeni) |
-| `moneta.svg` | MONETA Money Bank | [moneta.cz → Loga a fotografie](https://www.moneta.cz/servis-pro-media/loga-a-fotografie) — ZIP balíčky |
-| `mbank.svg` | mBank | [media.mbank.pl → mBank's logotypes](https://en.media.mbank.pl/presskits/mbank-s-logotypes) |
-| `csob.svg` | ČSOB | [csob.cz → Servis pro média](https://www.csob.cz/csob/servis-pro-media) |
-| `fio.svg` | Fio banka | [fio.cz → Média](https://www.fio.cz/o-nas/media) — PDF, PNG, JPG |
+| `airbank.png` | Air Bank | čtvercová ikona 310×310 ze zdrojáku [airbank.cz](https://www.airbank.cz/) |
+| `raiffeisenbank.svg` | Raiffeisenbank | štítový kříž vyříznutý z loga v HTML [rb.cz](https://www.rb.cz/) |
+| `moneta.png` | MONETA Money Bank | značka „M" 180×180 z [moneta.cz](https://www.moneta.cz/servis-pro-media/loga-a-fotografie) |
+| `mbank.png` | mBank | ikona „m" 120×120 z [mbank.cz](https://www.mbank.cz/) |
+| `csob.svg` | ČSOB | vektor, který používá web [csob.cz](https://www.csob.cz/csob/servis-pro-media) |
+| `fio.png` | Fio banka | čtvercová varianta 180×180 z [fio.cz](https://www.fio.cz/o-nas/media) |
+| `wolt.png` | Wolt | apple-touch-icon 180×180 z [wolt.com](https://wolt.com/cs) |
+| `bolt.svg` | Bolt Food | ikona značky Bolt z [bolt.eu](https://bolt.eu/cs-cz/food/) |
+| `rohlik.png` | Rohlík.cz | apple-touch-icon 180×180 z [rohlik.cz](https://www.rohlik.cz/) |
+| `liftago.jpg` | Liftago | webclip z [liftago.com](https://www.liftago.com/) |
+| `revolut.png` | Revolut | apple-touch-icon 180×180 z [revolut.com](https://www.revolut.com/cs-CZ/) |
 
-Nejrychlejší cesta bývá stejně **affiliate program dané banky** — kreativy tam
-mívají logo rovnou ve správných rozměrech a jejich použití je pokryté smlouvou.
+**Bolt Food nemá vlastní odlišené logo** na webu Boltu — používá se značka Bolt,
+proto `bolt.svg` a ne `boltfood.svg`. Zelená ikona z app storu oficiálně ke
+stažení není. **Foodora** v seznamu chybí schválně: foodora.cz vrací na
+stahování 403 a bez oficiálního souboru tam službu nedávám.
 
-## Co je tu teď
+Přesné adresy jsou v `scripts/logo-sources.json`. Spuštěním
+`node scripts/fetch-logos.mjs` se soubory stáhnou znovu — hodí se, když banka
+logo změní. Raiffeisenbank skript přeskočí: přímý odkaz neexistuje, logo je
+vložené rovnou do HTML a `raiffeisenbank.svg` je z něj oříznutý čtverec
+(zúžený `viewBox`, cesty beze změny).
 
-Soubory v tomhle adresáři jsou **dočasné monogramy** — zkratka banky v přibližně
-její firemní barvě, ne oficiální loga. Vznikly proto, aby kvíz nevypadal rozbitě,
-než doplníš reálné soubory: prostředí, kde se generovaly, mělo zablokovaný
-přístup na weby bank i na všechny logo agregátory.
+## Proč zrovna tyhle varianty
 
-## Jak je nahradit
+Logo se kreslí do dlaždice 44–48 px, takže rozhoduje čtvercový formát, ne to,
+jestli je soubor vektor. Proto jsou tu čtvercové ikony z webů bank a ne
+horizontální logotypy z tiskových kitů — „MONETA BANK" nebo „Raiffeisen Bank"
+na šířku je v téhle velikosti nečitelné. Kdyby se logo někdy vykreslovalo větší,
+vektorové logotypy jsou v poznámkách u jednotlivých bank v `logo-sources.json`.
 
-Ručně: stáhni logo ze zdroje v tabulce, přejmenuj na `<id>.svg` a nahraď soubor
-v tomhle adresáři. Nic víc — komponenta se na cestu odkazuje napevno.
+Dlaždice pod logem je zaoblený čtverec s bílým pozadím, ne kolečko: mBank
+a Moneta mají ikonu barevnou až do rohů a kolečko by je odřízlo.
 
-Nebo skriptem, když nechceš přejmenovávat ručně:
+## Co ohlídat při výměně
 
-1. Otevři stránku z tabulky, najdi logo a zkopíruj adresu souboru.
-2. Vlož ji do `scripts/logo-sources.json` do pole `file` u příslušné banky.
-3. Spusť `node scripts/fetch-logos.mjs`.
-
-Skript soubor stáhne, pojmenuje podle `id`, ohlídá typ i velikost a u jiné
-přípony než `.svg` připomene, že je potřeba upravit cestu v `OFFERS`. ZIP a PDF
-(MONETA, Fio) neumí rozbalit — ty vyřeš ručně.
-
-Pár praktických věcí, které se vyplatí ohlídat:
-
-- **Ber čtvercovou / symbolovou variantu**, ne dlouhý horizontální wordmark.
-  Logo se vykresluje do kolečka 44–48 px, takže „Raiffeisenbank“ na šířku bude
-  nečitelné, zatímco štítový kříž sedne.
-- **Průhledné pozadí.** Komponenta kreslí bílé kolečko pod logem, takže
-  varianta pro světlé pozadí je správná volba.
+- **Průhledné pozadí a čtvercový ořez.** Komponenta kreslí bílou dlaždici pod
+  logem, takže varianta pro světlé pozadí je správná volba.
 - **PNG jde taky** — přepiš pak příponu v `OFFERS` (`logo: "/logos/mbank.png"`).
   Doporučené rozlišení aspoň 128×128 px kvůli retina displejům.
 - Když soubor chybí nebo se nepodaří načíst, komponenta spadne zpátky na
-  barevné kolečko se zkratkou z pole `short`. Rozbitý obrázek se nikdy neukáže.
+  barevnou dlaždici se zkratkou z pole `short`. Rozbitý obrázek se nikdy neukáže.
+- **Náhled `preview/index.html` se sám neaktualizuje.** Loga tam jsou zapečená
+  do data URI, protože ukázka běží bez serveru. Po výměně souboru je potřeba
+  přegenerovat mapu `LOGOS` v `preview/index.html`. Že se to zapomnělo, ohlásí
+  `node scripts/check.mjs` — porovnává otisk obsahu, ne jméno souboru.
 
 ## Licence
 
 Loga jsou ochranné známky příslušných bank a nejsou součástí licence tohohle
 repozitáře. Použití se řídí brand manuálem / podmínkami affiliate programu dané
 banky — typicky nesmíš logo deformovat, překreslovat, měnit barvy ani ho
-kombinovat s vlastními prvky do nové značky.
+kombinovat s vlastními prvky do nové značky. Než web pustíš ven, projdi si to
+s každou bankou zvlášť; u Air Bank a ČSOB tiskové oddělení posílá soubory
+i podmínky na vyžádání.

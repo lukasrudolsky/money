@@ -17,12 +17,23 @@ jen kvůli tomu, aby cesty odpovídaly ostrému běhu.
 `components/BonusQuiz.jsx` zůstává zdroj pravdy. Náhled z něj přebírá otázky,
 nabídky i logiku `matchOffers` jedna ku jedné, ale:
 
-- **Ikony** jsou ručně dokreslené inline SVG, ne `lucide-react`.
-- **Loga** jsou vložená přímo do stránky, ne načtená z `/logos/`. Pořád jde
-  o monogramy z `public/logos/`, ne o oficiální soubory bank.
-- **Tlačítka „Získat odměnu"** nikam nevedou. V aplikaci míří na `/go/<id>`
-  s `rel="sponsored nofollow"`.
+- **Ikony** jsou tatáž sada jako `components/icons.jsx`, jen zapsaná jako
+  řetězce v konstantě `ICONS` místo React komponent. Když jednu upravíš, uprav
+  obě — nic je nedrží v souladu.
+- **Písma** jsou stejné soubory jako v `public/fonts/`, zapečené do stránky jako
+  data URI. Kvůli nim má náhled skoro 300 kB; v aplikaci se stahují normálně.
+- **Loga** jsou stejné soubory jako v `public/logos/`, ale zapečené do stránky
+  jako data URI v konstantě `LOGOS`, ne načtené z `/logos/`. Když logo v
+  `public/logos/` vyměníš, tuhle mapu je potřeba přegenerovat ručně.
+- **Tlačítka „Získat odměnu" a „Vyzkoušet"** nikam nevedou. V aplikaci míří na
+  `/go/<id>` s `rel="sponsored nofollow"`.
+- **Tlačítko „Účty od 15 let"** na obrazovce pro nezletilé taky nikam nevede.
+  V aplikaci je to odkaz na `/ucty-pro-mladsi-18`. Obě cesty musí na webu
+  existovat, jinak končí kvíz čtyřstovkou přesně na tom kliku, který vydělává —
+  `check.mjs` je ověřit neumí, jsou mimo tuhle repo.
 - **Ovládání klávesnicí** (A–C, Enter) i chování pro nezletilé fungují stejně.
+  Na úvodní obrazovce písmena nic nevybírají, Enter spouští kvíz.
 
 Když upravíš otázky nebo nabídky v komponentě, náhled se sám neaktualizuje —
-je to samostatná kopie a časem se rozejde.
+je to samostatná kopie. Že se rozešla, pozná `node scripts/check.mjs`:
+porovnává data, otázky, ikony i otisky zapečených log a písem.

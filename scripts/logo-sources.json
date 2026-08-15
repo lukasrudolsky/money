@@ -1,53 +1,88 @@
 {
   "_comment": [
-    "page  = oficiální stránka banky pro média, ověřená (tam se logo hledá).",
-    "file  = přímý odkaz na soubor s logem. Doplň ho ručně — otevři 'page',",
-    "        najdi logo, zkopíruj adresu souboru (pravý klik → Kopírovat adresu",
-    "        odkazu / obrázku) a vlož sem. Pak spusť: node scripts/fetch-logos.mjs",
-    "Prázdný 'file' skript přeskočí a jen vypíše, kam se podívat."
+    "page  = oficiální stránka, ze které logo pochází.",
+    "file  = přímý odkaz na soubor. Spusť: node scripts/fetch-logos.mjs",
+    "Prázdný 'file' skript přeskočí a jen vypíše, kam se podívat.",
+    "id musí sedět na jméno souboru v public/logos/ bez přípony — skript pod ním",
+    "ukládá. Že se to rozešlo, ohlásí node scripts/check.mjs."
   ],
-  "banks": [
+  "logos": [
     {
       "id": "airbank",
       "name": "Air Bank",
-      "page": "https://www.airbank.cz/pro-novinare/",
-      "file": "",
-      "note": "Logo není na stránce přímo ke stažení, píší si o něj na novinari@airbank.cz. Rychlejší cesta bývají kreativy v affiliate programu."
+      "page": "https://www.airbank.cz/",
+      "file": "https://cdn.siteone.io/airbank.cz/favicon-310.png",
+      "note": "Čtvercová ikona ze zdrojáku airbank.cz (link rel=icon, 310×310). Tiskové oddělení posílá logo na vyžádání z novinari@airbank.cz."
     },
     {
       "id": "raiffeisenbank",
       "name": "Raiffeisenbank",
       "page": "https://www.rb.cz/informacni-servis/pro-media/ke-stazeni",
       "file": "",
-      "note": "Sekce 'Ke stažení' má i fotobanku: /informacni-servis/pro-media/ke-stazeni/fotobanka"
+      "note": "Přímý odkaz neexistuje: logo je vložené přímo do HTML rb.cz. raiffeisenbank.svg je z něj vyříznutý žlutý štítový kříž — viewBox oříznutý na čtverec, cesty beze změny. Sekce 'Ke stažení' se načítá JavaScriptem, takže z ní curl nic nedostane."
     },
     {
       "id": "moneta",
       "name": "MONETA Money Bank",
       "page": "https://www.moneta.cz/servis-pro-media/loga-a-fotografie",
-      "file": "",
-      "note": "Loga jsou v ZIP balíčcích (32 kB až 6 MB). ZIP si rozbal a vyber čtvercovou variantu."
+      "file": "https://www.moneta.cz/o/mmb-2024-theme/images/favicon/apple-touch-icon.png",
+      "note": "Značka 'M' 180×180 z webu banky. Celý logotyp i s nápisem MONETA BANK je v SVG na https://www.moneta.cz/documents/20143/24988513/moneta-money-bank-logo-new.svg — na 48 px je ale nečitelný."
     },
     {
       "id": "mbank",
       "name": "mBank",
       "page": "https://en.media.mbank.pl/presskits/mbank-s-logotypes",
-      "file": "",
-      "note": "Oficiální press kit skupiny mBank, sekce přímo pro logotypy."
+      "file": "https://www.mbank.cz/images/logos/favicons/apple-touch-icon-precomposed.png",
+      "note": "Ikona 'm' 120×120 z mbank.cz. Press kit skupiny má i vektory, ale za přihlášením."
     },
     {
       "id": "csob",
       "name": "ČSOB",
       "page": "https://www.csob.cz/csob/servis-pro-media",
-      "file": "",
-      "note": "Loga používaná webem ČSOB leží i v /o/pui-theme-pw-ng/images/pui/csob/logos/ — pro produkci si ale radši vyžádej soubor z tiskového oddělení."
+      "file": "https://www.csob.cz/o/pui-theme-pw-ng/images/pui/csob/logos/logo.svg",
+      "note": "Vektor, který používá web ČSOB. Stránka pro média i homepage vrací na curl chybu 500 / antibot, tenhle soubor se stáhne bez problémů. Pro produkci si radši vyžádej soubor z tiskového oddělení."
     },
     {
       "id": "fio",
       "name": "Fio banka",
       "page": "https://www.fio.cz/o-nas/media",
-      "file": "",
-      "note": "Loga ke stažení v PDF, PNG a JPG přímo na stránce."
+      "file": "https://www.fio.cz/gfx/favicons/apple-touch-icon.png",
+      "note": "Čtvercová varianta 180×180. Na stránce pro média je logo i v PDF a JPG (/docs/web_pics/), ale jen naležato."
+    },
+    {
+      "id": "wolt",
+      "name": "Wolt",
+      "page": "https://wolt.com/cs",
+      "file": "https://wolt-com-static-assets.wolt.com/apple-icon-180x180.png",
+      "note": "Služba, ne banka — viz SERVICES v components/BonusQuiz.jsx."
+    },
+    {
+      "id": "bolt",
+      "name": "Bolt Food",
+      "page": "https://bolt.eu/cs-cz/food/",
+      "file": "https://assets.homepage.bolt.eu/1.22.122/public/common-assets/icon.svg",
+      "note": "Bolt Food nemá na webu vlastní odlišené logo, používá se značka Bolt. Adresa obsahuje číslo verze buildu — když přestane fungovat, vytáhni novou z <link rel=icon> na bolt.eu."
+    },
+    {
+      "id": "rohlik",
+      "name": "Rohlík.cz",
+      "page": "https://www.rohlik.cz/",
+      "file": "https://www.rohlik.cz/favicon/cz/apple-touch-icon.png",
+      "note": "Služba, ne banka."
+    },
+    {
+      "id": "liftago",
+      "name": "Liftago",
+      "page": "https://www.liftago.com/",
+      "file": "https://cdn.prod.website-files.com/6602c46399e26497f431d664/660d29358a00cb1928b88965_liftago-webclip.jpg",
+      "note": "Webclip z Webflow CDN — jediná čtvercová varianta, kterou web nabízí. JPG, takže neprůhledné pozadí; na bílé dlaždici to nevadí."
+    },
+    {
+      "id": "revolut",
+      "name": "Revolut",
+      "page": "https://www.revolut.com/cs-CZ/",
+      "file": "https://assets.revolut.com/assets/favicons/apple-touch-icon.png",
+      "note": "Služba, ne banka."
     }
   ]
 }
