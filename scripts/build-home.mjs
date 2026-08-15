@@ -106,10 +106,14 @@ ${faces.join("\n")}
     --fg: #0B2620;
     --fg-soft: #46605A;
     --fg-faint: #6B837D;
-    --line: #E3EBE8;
-    --card: #F7FAFA;
+    --line: #DCE8E3;
+    --tint: #F1F7F4;
+    --card: #FFFFFF;
     --accent: #0B5F4B;
-    --accent-soft: #EAF6F2;
+    --accent-soft: #E7F4EE;
+    /* Stín má zelenavý nádech místo šedého: na téhle stránce nikde není
+       neutrální šedá a černý stín by mezi zelené tóny nepatřil. */
+    --lift: 0 1px 2px rgba(11, 38, 32, 0.05), 0 10px 28px rgba(11, 95, 75, 0.07);
 
     --ui: "Schibsted Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
     --display: "Bricolage Grotesque", var(--ui);
@@ -238,31 +242,45 @@ ${faces.join("\n")}
 
   /* ---- sekce ------------------------------------------------------- */
 
-  section { padding: clamp(48px, 7vh, 80px) 0; }
-  section + section { border-top: 1px solid var(--line); }
-  section h2 { font-size: clamp(1.5rem, 3.5vw, 2rem); font-weight: 600; margin-bottom: 8px; }
-  section .note { color: var(--fg-soft); font-size: 0.9375rem; max-width: 62ch; }
+  /* Tónovaný pruh nese bílé karty. Obráceně to nefungovalo: skoro bílé
+     karty na bílé stránce splývaly a sekce vypadala prázdně. */
+  .band { padding: clamp(48px, 7vh, 80px) 0; }
+  .band.tinted { background: var(--tint); }
+  .band + .band:not(.tinted) { border-top: 1px solid var(--line); }
+  .band h2 { font-size: clamp(1.5rem, 3.5vw, 2rem); font-weight: 600; margin-bottom: 8px; }
+  .band .note { color: var(--fg-soft); font-size: 0.9375rem; max-width: 62ch; }
   .grid { display: grid; gap: 12px; margin-top: 32px; }
   @media (min-width: 760px) { .steps { grid-template-columns: repeat(3, 1fr); } }
 
-  .card { padding: 20px; border-radius: 16px; background: var(--card); border: 1px solid var(--line); }
+  .card {
+    padding: 24px; border-radius: 18px;
+    background: var(--card); border: 1px solid var(--line);
+    box-shadow: var(--lift);
+  }
+  /* Číslo kroku je plné, ne jen tónované: v pořadí je to ta nejsilnější
+     informace a bledý kroužek ji nesl hůř než sám nadpis. */
   .card .chip {
     display: inline-flex; align-items: center; justify-content: center;
-    width: 44px; height: 44px; border-radius: 12px;
-    background: var(--accent-soft); color: var(--accent);
-    font-weight: 600; margin-bottom: 16px;
+    width: 40px; height: 40px; border-radius: 12px;
+    background: var(--accent); color: #fff;
+    font-family: var(--display); font-size: 1.0625rem; font-weight: 700;
+    margin-bottom: 18px;
   }
-  .card h3 { font-size: 1.125rem; font-weight: 600; margin-bottom: 8px; }
-  .card p { color: var(--fg-soft); font-size: 0.9375rem; }
+  .card h3 { font-size: 1.1875rem; font-weight: 600; margin-bottom: 8px; color: var(--fg); }
+  .card p { color: var(--fg-soft); font-size: 0.9375rem; line-height: 1.5; }
 
   /* ---- řádek nabídky ----------------------------------------------- */
 
   .offer {
     display: flex; align-items: center; gap: 16px;
-    padding: 16px; border-radius: 16px;
+    padding: 16px 20px; border-radius: 16px;
     background: #fff; border: 1px solid var(--line);
+    box-shadow: var(--lift);
   }
-  .offer.best { border-color: var(--accent); background: var(--accent-soft); }
+  .offer.best {
+    border-color: var(--accent); background: var(--accent-soft);
+    box-shadow: 0 1px 2px rgba(11, 38, 32, 0.06), 0 12px 32px rgba(11, 95, 75, 0.12);
+  }
   .offer .txt { flex: 1; min-width: 0; }
   .offer .bank { display: block; font-weight: 500; }
   .offer .cond { display: block; font-size: 0.875rem; color: var(--fg-soft); }
@@ -285,7 +303,7 @@ ${faces.join("\n")}
   .end { text-align: center; }
   .end h2 { margin-bottom: 24px; }
 
-  footer { padding: clamp(40px, 6vh, 64px) 0 48px; border-top: 1px solid var(--line); background: var(--card); }
+  footer { padding: clamp(40px, 6vh, 64px) 0 48px; border-top: 1px solid var(--line); background: var(--tint); }
   .foot { display: grid; gap: 32px; }
   @media (min-width: 760px) { .foot { grid-template-columns: 1.6fr 1fr 1fr; } }
   .foot h3 {
@@ -351,7 +369,8 @@ ${faces.join("\n")}
 </header>
 
 <main>
-  <section class="wrap" id="jak">
+  <section class="band tinted" id="jak">
+    <div class="wrap">
     <h2>Jak to funguje</h2>
     <p class="note">Kvíz nesbírá kontakty. Ptá se jen na to, co rozhoduje o tom, jestli ti banka odměnu vyplatí.</p>
     <div class="grid steps">
@@ -361,9 +380,11 @@ ${STEPS.map(([t, d], i) => `      <div class="card">
         <p>${esc(d)}</p>
       </div>`).join("\n")}
     </div>
+    </div>
   </section>
 
-  <section class="wrap" id="odmeny">
+  <section class="band" id="odmeny">
+    <div class="wrap">
     <h2>Co teď banky dávají</h2>
     <p class="note">Nejvyšší odměny stojí na příchozí výplatě, ty nejnižší nechtějí nic. Kvíz z toho vybere, co sedí na tebe.</p>
     <div class="grid">
@@ -376,9 +397,11 @@ ${OFFERS.slice().sort((a, b) => b.amount - a.amount).map((o, i) => `      <div c
         <span class="amt">${czk(o.amount)}</span>
       </div>`).join("\n")}
     </div>
+    </div>
   </section>
 
-  <section class="wrap" id="sluzby">
+  <section class="band tinted" id="sluzby">
+    <div class="wrap">
     <h2>Kde ještě dostaneš uvítací kredit</h2>
     <p class="note">Výši kreditu určuje aktuální akce, uvidíš ji při registraci. Proto tady žádnou částku netipujeme.</p>
     <div class="grid">
@@ -390,13 +413,16 @@ ${SERVICES.map((s) => `      <div class="offer">
         </span>
       </div>`).join("\n")}
     </div>
+    </div>
   </section>
 
-  <section class="wrap end">
+  <section class="band end">
+    <div class="wrap">
     <h2>Tak co, kolik to bude?</h2>
     <a class="go" href="__QUIZ__">Zjistit, na co dosáhnu
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="butt" stroke-linejoin="miter" aria-hidden="true"><path d="M3 12h11"/><path d="M12.5 5.5 20.5 12l-8 6.5Z" fill="currentColor" stroke="none"/></svg>
     </a>
+    </div>
   </section>
 </main>
 
