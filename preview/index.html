@@ -661,31 +661,22 @@
      pravidla níž přebijí pořadím. */
   .intro { display: grid; padding-bottom: 32px; }
   .intro > *,
-  .intro .hero > *,
   .intro .pitch > *,
   .intro .close > * { margin: 0; }
 
-  .intro .hero,
   .intro .pitch,
   .intro .close { display: grid; }
 
   .intro .eyebrow { margin-bottom: 16px; }
-  .intro .hero .lead { margin-bottom: 8px; font-size: 1.125rem; color: var(--fg-soft); }
-  .intro .hero .sum { margin-bottom: 24px; }
   .intro .pitch h2 { margin-bottom: 16px; }
   .intro .pitch .sub { margin-bottom: 32px; max-width: 60ch; }
-  .intro .logorow { margin-bottom: 32px; }
   .intro .close .row { margin-bottom: 12px; }
   .intro .close { justify-items: start; }
-
-  .logorow { display: flex; flex-wrap: wrap; gap: 12px; }
-  .logorow .logo { opacity: 0.9; }
 
   .intro > * { animation: rise 520ms var(--ease) both; }
   .intro > :nth-child(1) { animation-delay: 60ms; }
   .intro > :nth-child(2) { animation-delay: 140ms; }
   .intro > :nth-child(3) { animation-delay: 220ms; }
-  .intro > :nth-child(4) { animation-delay: 300ms; }
   @media (prefers-reduced-motion: reduce) { .intro > * { animation: none; } }
 
 </style>
@@ -902,7 +893,64 @@
   // step === -1 je úvodní obrazovka. Otázky začínají nulou, aby zbytek kódu
   // (ukazatel průběhu, „Zpět", počítání) zůstal na indexech beze změny.
   const INTRO = -1;
-  const POT = OFFERS.reduce((s, o) => s + o.amount, 0);
+
+  /* ---- co si kvíz pamatuje mezi návštěvami ------------------------------
+     Kdo projde sedm otázek a pak si nic nevezme, je dnes ztracený: po
+     návratu na něj čeká prázdný formulář, ne částka, kterou si spočítal.
+     Tohle je jediné, co s tím jde udělat bez e-mailu a bez serveru.
+
+     Drží se to v prohlížeči a nikam to neodchází. Ukládají se odpovědi, ne
+     výsledek — nabídky se mění a přepočítat je z odpovědí je vždycky
+     správnější než vytáhnout ze šuplíku částku, která už neplatí.
+
+     Verze je v klíči schválně: až se tvar dat změní, starý záznam se
+     zahodí místo toho, aby se z něj četla pole, která v něm nejsou. */
+  const STORE = "bonusradce.odpovedi.v1";
+
+  // Všechno v try: v anonymním okně a při zakázaných úložištích localStorage
+  // vyhodí výjimku už při čtení. Kvíz kvůli tomu nesmí spadnout, jen si
+  // nebude nic pamatovat.
+  function loadSaved() {
+    try {
+      const r = JSON.parse(localStorage.getItem(STORE) || "null");
+      if (!r || !r.answers) return null;
+      // Nabídka mohla mezitím z přehledu zmizet.
+      r.vzato = (r.vzato || []).filter((id) => OFFERS.some((o) => o.id === id));
+      return r;
+    } catch (e) { return null; }
+  }
+
+  // Vedle odpovědí se ukládá i hotový seznam nabídek. Úvodní stránka totiž
+  // nezná ani nabídky, ani pravidla kvízu a nemá je znát — jinak by tatáž
+  // logika žila na dvou místech a rozešla by se. Dostane proto rovnou to,
+  // co má vypsat: jméno, částku a id na partnerský odkaz.
+  function writeSaved(answers, vzato, kdy) {
+    try {
+      const zbyva = matchOffers(answers).filter((o) => !vzato.includes(o.id));
+      localStorage.setItem(STORE, JSON.stringify({
+        kdy: kdy || new Date().toISOString().slice(0, 10),
+        answers: answers,
+        vzato: vzato,
+        pocet: zbyva.length,
+        castka: zbyva.reduce((s, o) => s + o.amount, 0),
+        nabidky: zbyva.map((o) => ({ id: o.id, bank: o.bank, amount: o.amount })),
+      }));
+    } catch (e) {}
+  }
+
+  function saveAnswers(a) {
+    const prev = loadSaved();
+    writeSaved(a, prev ? prev.vzato : []);
+  }
+
+  // Klik na „Získat bonus". Nabídka tím z nedokončených zmizí, takže zvonek
+  // na úvodní stránce nepřipomíná něco, co si člověk už vzal.
+  function markTaken(id) {
+    const r = loadSaved();
+    if (!r) return;
+    if (!r.vzato.includes(id)) r.vzato.push(id);
+    writeSaved(r.answers, r.vzato, r.kdy);
+  }
 
   let step = INTRO;
   let answers = BLANK();
@@ -1039,16 +1087,11 @@
       '<div class="intro">' +
       // Čtyři skupiny, ne osm samostatných prvků: rytmus pak dělá gap, ne
       // marginy, které se sčítají.
-      '<div class="hero">' +
-      '<div class="eyebrow">' + icon("sparkles", 16) + "<span>Bonusy za registraci</span></div>" +
-      '<p class="lead">Banky teď rozdávají dohromady</p>' +
-      '<p class="sum">' + czk(POT) + "</p></div>" +
+      '<div class="eyebrow">' + icon("sparkles", 16) + "<span>Kalkulačka bonusů</span></div>" +
       // Počet otázek se počítá, ne opisuje — už se posunul z pěti na sedm.
-      '<div class="pitch"><h2>Kolik z toho je pro tebe?</h2>' +
-      '<p class="sub">Ber všechny, na které dosáhneš. Odpověz na ' + total + " " + otazek(total) +
-      " a poskládáme ti z bonusů nejvyšší možnou částku a poradíme, " +
-      "co si kde pohlídat, aby ti žádný neutekl.</p></div>" +
-      '<div class="logorow">' + OFFERS.map((o) => logo(o.id, 48)).join("") + "</div>" +
+      '<div class="pitch"><h2>Na které bonusy dosáhneš?</h2>' +
+      '<p class="sub">Odpověz na ' + total + " " + otazek(total) +
+      ". Nabídky, na jejichž podmínky nedosáhneš, ti odečteme.</p></div>" +
       '<div class="close"><div class="row">' +
       '<button class="go" data-act="start">Zjistit, na co dosáhnu ' + icon("arrow", 18) + "</button>" +
       '<span class="hintline">nebo stiskni <strong>Enter ↵</strong></span>' +
@@ -1133,6 +1176,10 @@
     const matched = matchOffers(answers);
     const sum = matched.reduce((s, o) => s + o.amount, 0);
 
+    // Uloží se ve chvíli, kdy je výsledek na obrazovce. Dřív by to znamenalo
+    // pamatovat si rozdělaný kvíz, což nikomu nepomůže.
+    saveAnswers(answers);
+
     // Co konkrétně odpověď blokuje, ví jen tenhle výpočet — proto se to
     // v prázdném stavu říká adresně místo obecného „zkus něco změnit".
     const blocked = OFFERS.filter((o) => !(answers.owned || []).includes(o.id));
@@ -1183,7 +1230,7 @@
         '<span class="amt">' + czk(o.amount) + "</span></div>" +
         '<p class="note">' + esc(o.note) + "</p>" +
         '<div class="foot"><span class="ok">' + icon("check", 15) + " Splňuješ podmínky</span>" +
-        '<button class="cta" data-act="offer">Získat bonus ' + icon("arrow", 16) + "</button></div></div>";
+        '<button class="cta" data-act="offer" data-id="' + esc(o.id) + '">Získat bonus ' + icon("arrow", 16) + "</button></div></div>";
     }).join("") + "</div>";
 
     const services = SERVICES.filter((s) => !(answers.apps || []).includes(s.id));
@@ -1230,6 +1277,7 @@
         if (act === "start" || act === "next") go(step + 1);
         else if (act === "prev") go(step - 1);
         else if (act === "reset") reset();
+        else if (act === "offer") markTaken(el.getAttribute("data-id"));
       });
     });
   }

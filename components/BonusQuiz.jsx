@@ -51,8 +51,6 @@ const SERVICES = [
 // Kolik na účet reálně dostaneš podle odpovědi na otázku o výplatě.
 const INCOME = { yes: Infinity, partial: 10000, no: 0 };
 
-const POT = OFFERS.reduce((s, o) => s + o.amount, 0);
-
 const otazek = (n) => (n === 1 ? "otázku" : n < 5 ? "otázky" : "otázek");
 
 const BG = "#04352A";
@@ -65,6 +63,61 @@ const LETTERS = "ABCDEFGHIJKLMN".split("");
 // step === INTRO je úvodní obrazovka. Otázky začínají nulou, aby zbytek
 // (ukazatel průběhu, „Zpět", počítání) zůstal na indexech beze změny.
 const INTRO = -1;
+
+/* ---- co si kvíz pamatuje mezi návštěvami --------------------------------
+   Kdo projde sedm otázek a pak si nic nevezme, je dnes ztracený: po návratu
+   na něj čeká prázdný formulář, ne částka, kterou si spočítal. Tohle je
+   jediné, co s tím jde udělat bez e-mailu a bez serveru.
+
+   Drží se to v prohlížeči a nikam to neodchází. Ukládají se odpovědi, ne
+   výsledek — nabídky se mění a přepočítat je z odpovědí je vždycky
+   správnější než vytáhnout ze šuplíku částku, která už neplatí.
+
+   `pocet`, `castka` a `nabidky` jsou navíc pro úvodní stránku. Ta nezná
+   nabídky ani pravidla kvízu a nemá je znát, jinak by tatáž logika žila na
+   dvou místech. Dostane proto rovnou to, co má vypsat.
+
+   Verze je v klíči schválně: až se tvar dat změní, starý záznam se zahodí
+   místo toho, aby se z něj četla pole, která v něm nejsou. */
+const STORE = "bonusradce.odpovedi.v1";
+
+// Všechno v try: v anonymním okně a při zakázaných úložištích localStorage
+// vyhodí výjimku už při čtení. Kvíz kvůli tomu nesmí spadnout, jen si
+// nebude nic pamatovat.
+function loadSaved() {
+  try {
+    const r = JSON.parse(localStorage.getItem(STORE) || "null");
+    if (!r || !r.answers) return null;
+    // Nabídka mohla mezitím z přehledu zmizet.
+    r.vzato = (r.vzato || []).filter((id) => OFFERS.some((o) => o.id === id));
+    return r;
+  } catch (e) { return null; }
+}
+
+function writeSaved(answers, vzato, kdy) {
+  try {
+    const zbyva = matchOffers(answers).filter((o) => !vzato.includes(o.id));
+    localStorage.setItem(STORE, JSON.stringify({
+      kdy: kdy ?? new Date().toISOString().slice(0, 10),
+      answers,
+      vzato,
+      pocet: zbyva.length,
+      castka: zbyva.reduce((s, o) => s + o.amount, 0),
+      nabidky: zbyva.map((o) => ({ id: o.id, bank: o.bank, amount: o.amount })),
+    }));
+  } catch (e) {}
+}
+
+const saveAnswers = (answers) => writeSaved(answers, loadSaved()?.vzato ?? []);
+
+// Klik na „Získat bonus". Nabídka tím z nedokončených zmizí, takže zvonek
+// na úvodní stránce nepřipomíná něco, co si člověk už vzal.
+function markTaken(id) {
+  const r = loadSaved();
+  if (!r) return;
+  if (!r.vzato.includes(id)) r.vzato.push(id);
+  writeSaved(r.answers, r.vzato, r.kdy);
+}
 
 // Banky i služby se vybírají po víc kusech; zbytek otázek je jedna možnost.
 const isMulti = (q) => q.type === "banks" || q.type === "services";
@@ -162,18 +215,14 @@ const BASE_CSS = `
    pořadím; odstavce si jinak nesou výchozí margin prohlížeče. */
 .intro { display: grid; padding-bottom: 32px; }
 .intro > *,
-.intro .hero > *,
 .intro .pitch > *,
 .intro .close > * { margin: 0; }
 
-.intro .hero, .intro .pitch, .intro .close { display: grid; }
+.intro .pitch, .intro .close { display: grid; }
 
-.intro .hero > div { margin-bottom: 16px; }
-.intro .hero p { margin-bottom: 8px; }
-.intro .hero .sum { margin-bottom: 24px; }
+.intro .eyebrow { margin-bottom: 16px; }
 .intro .pitch h2 { margin-bottom: 16px; }
 .intro .pitch p { margin-bottom: 32px; }
-.intro .logorow { margin-bottom: 32px; }
 .intro .close > div { margin-bottom: 12px; }
 .intro .close { justify-items: start; }
 
@@ -256,7 +305,6 @@ const BASE_CSS = `
 .intro > :nth-child(1) { animation-delay: 60ms; }
 .intro > :nth-child(2) { animation-delay: 140ms; }
 .intro > :nth-child(3) { animation-delay: 220ms; }
-.intro > :nth-child(4) { animation-delay: 300ms; }
 @media (prefers-reduced-motion: reduce) { .intro > * { animation: none; } }
 `;
 
@@ -514,6 +562,12 @@ export default function BonusQuiz() {
   const total = QUESTIONS.length;
   const intro = step === INTRO;
   const done = step >= total;
+
+  // Uloží se ve chvíli, kdy je výsledek na obrazovce. Dřív by to znamenalo
+  // pamatovat si rozdělaný kvíz, což nikomu nepomůže.
+  useEffect(() => {
+    if (done && answers.age !== "under18") saveAnswers(answers);
+  }, [done, answers]);
   const cur = intro || done ? null : QUESTIONS[step];
   const runningTotal = matchOffers(answers).reduce((s, o) => s + o.amount, 0);
 
@@ -582,8 +636,10 @@ export default function BonusQuiz() {
   // aktualizační funkci a uložil by do stavu její návratovou hodnotu jen náhodou.
   const reset = () => { clearPending(); setStep(INTRO); setAnswers(BLANK()); setPhase("in"); };
 
-  // Částka je součet OFFERS, ne kulaté číslo natvrdo — když se nabídka změní,
-  // slib na první obrazovce se změní s ní.
+  // Úvodní obrazovka popisuje kvíz, ne nabídky. Částku ani loga banky tu
+  // schválně nemá: to obojí odvypráví úvodní stránka, ze které sem člověk
+  // přišel, a zopakovat jí to znamená připsat mu jednu obrazovku navíc,
+  // na které se nic nedozví. Sem patří, na co se ptáme a co z toho vyjde.
   if (intro) {
     return (
       <Shell progress={0} total={null} mascot>
@@ -592,31 +648,20 @@ export default function BonusQuiz() {
         <div className="intro">
           {/* Čtyři skupiny, ne osm samostatných prvků: rytmus pak dělá gap,
               ne marginy, které se sčítají i ruší. */}
-          <div className="hero">
-            <div className="flex items-center gap-2" style={{ color: MINT }}>
-              <Sparkles size={16} />
-              <span className="text-sm">Bonusy za registraci</span>
-            </div>
-            <p className="text-lg" style={{ opacity: 0.75 }}>Banky teď rozdávají dohromady</p>
-            <p className="sum text-6xl sm:text-7xl"><Ticker value={POT} /></p>
+          <div className="eyebrow flex items-center gap-2" style={{ color: MINT }}>
+            <Sparkles size={16} />
+            <span className="text-sm">Kalkulačka bonusů</span>
           </div>
 
           <div className="pitch">
             <h2 className="text-3xl sm:text-4xl" style={{ fontFamily: DISPLAY, lineHeight: 1.1, letterSpacing: "-0.02em" }}>
-              Kolik z toho je pro tebe?
+              Na které bonusy dosáhneš?
             </h2>
             {/* Počet otázek se počítá, ne opisuje — už se posunul z pěti na sedm. */}
             <p className="text-lg" style={{ opacity: 0.75, maxWidth: "60ch" }}>
-              Ber všechny, na které dosáhneš. Odpověz na {total} {otazek(total)} a poskládáme
-              ti z bonusů nejvyšší možnou částku a poradíme, co si kde pohlídat,
-              aby ti žádný neutekl.
+              Odpověz na {total} {otazek(total)}. Nabídky, na jejichž podmínky nedosáhneš,
+              ti odečteme.
             </p>
-          </div>
-
-          <div className="logorow flex flex-wrap gap-3">
-            {OFFERS.map((o) => (
-              <Logo key={o.id} src={o.logo} short={o.short} tint={o.tint} size={48} />
-            ))}
           </div>
 
           <div className="close">
@@ -753,7 +798,7 @@ export default function BonusQuiz() {
                 <span className="inline-flex items-center gap-1.5 text-sm" style={{ color: MINT }}>
                   <Check size={15} /> Splňuješ podmínky
                 </span>
-                <a href={`/go/${o.id}`} rel="sponsored nofollow"
+                <a href={`/go/${o.id}`} rel="sponsored nofollow" onClick={() => markTaken(o.id)}
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl"
                   style={{ background: MINT, color: INK }}>
                   Získat bonus <ArrowRight size={16} />
